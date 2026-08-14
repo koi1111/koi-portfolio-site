@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="王瑾俪的业务 AI、商品企划与零售数字化作品集">
+  <title>王瑾俪 | Business × Data × AI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#work">跳到项目</a>
+  <header class="nav">
+    <a class="logo" href="#top">WJL <span>Selected Work</span></a>
+    <nav><a href="#work">Work</a><a href="#approach">Approach</a><a href="#archive">Archive</a><button id="themeToggle">◐</button></nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="label">BUSINESS AI / RETAIL DIGITALIZATION</p>
+        <h1><span>Make AI</span><em>useful</em><span>for business.</span></h1>
+        <p class="hero-cn">把商品、数据和流程中的真实问题，做成可以运行、验证并持续改善的产品。</p>
+        <div class="hero-actions"><a href="#work">View selected work</a><span>商品业务 × 数据治理 × AI 应用</span></div>
+      </div>
+      <figure class="hero-media">
+        <img src="assets/interface-collage.png" alt="零售数字化系统界面拼贴">
+        <figcaption>SELECTED PRODUCT WORK / 2024—2026</figcaption>
+      </figure>
+    </section>
+
+    <section class="work" id="work">
+      <header class="work-heading"><div><p class="label">SELECTED IMPACT</p><h2>从业务问题，<br>走到可见结果。</h2></div><p>四个代表项目，分别证明效率提升、真实采用、数据治理与经营决策产品化。</p></header>
+      <div class="impact-board" id="impactBoard">
+        <article class="impact-card active" tabindex="0" data-impact="ctc">
+          <div class="impact-top"><span>01 / CTC TRANSFER</span><span>真实试用</span></div>
+          <div class="impact-metric"><div><b>≈14</b><small>人天 / 原流程</small></div><i>→</i><div><b>≈30</b><small>分钟 / 主体计算</small></div></div>
+          <div class="impact-story"><h3>把调拨经验变成可比较的算法</h3><p>库存、在途、销速、需求与尺码约束进入同一条计算链。</p><small>团队试用 · 持续与人工方案对比</small><button data-open="ctc">Read case ↗</button></div>
+        </article>
+        <article class="impact-card" tabindex="0" data-impact="old-stock">
+          <div class="impact-top"><span>02 / OLD STOCK</span><span>真实使用</span></div>
+          <div class="impact-metric"><div><b>≈2</b><small>周 / 人工盘点</small></div><i>→</i><div><b>3–4</b><small>天 / 工具处理</small></div></div>
+          <div class="impact-story"><h3>把一次性表格变成持续工具</h3><p>库龄、库存和销售状态可以被直接查询并转化为经营动作。</p><small>真实业务人员使用 · 处理周期缩短</small><button data-open="old-stock">Read case ↗</button></div>
+        </article>
+        <article class="impact-card" tabindex="0" data-impact="permission">
+          <div class="impact-top"><span>03 / PERMISSION</span><span>已上线运行</span></div>
+          <div class="impact-metric single"><div><b>73</b><small>类真实角色</small></div><i>×</i><div><b>416</b><small>个分级字段</small></div></div>
+          <div class="impact-story"><h3>让权限进入真实查询链路</h3><p>从提示词约束，推进到执行前拦截、默认拒绝与审计。</p><small>已上线运行 · 真实身份联调</small><button data-open="permission">Read case ↗</button></div>
+        </article>
+        <article class="impact-card" tabindex="0" data-impact="otb">
+          <div class="impact-top"><span>04 / OTB PLANNING</span><span>已部署使用</span></div>
+          <div class="impact-metric single"><div><b>≈21</b><small>个真实查询接口</small></div></div>
+          <div class="impact-story"><h3>把分散数据送进决策界面</h3><p>预算、采购、销售、毛利、库存和审批进入同一产品。</p><small>真实数据接入 · 已部署辅助买货</small><button data-open="otb">Read case ↗</button></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="approach" id="approach">
+      <header><p class="label">HOW I BUILD</p><h2>从现场判断，到结果验证。</h2><p>我的工作不是从页面开始，而是先找到真正需要被改变的业务决策。</p></header>
+      <div class="stepper" role="tablist">
+        <button class="step active" data-step="0"><i>01</i><span>进入现场</span></button>
+        <button class="step" data-step="1"><i>02</i><span>定义问题</span></button>
+        <button class="step" data-step="2"><i>03</i><span>建立模型</span></button>
+        <button class="step" data-step="3"><i>04</i><span>做成产品</span></button>
+        <button class="step" data-step="4"><i>05</i><span>真实验证</span></button>
+      </div>
+      <article class="step-panel" id="stepPanel" aria-live="polite"></article>
+    </section>
+
+    <section class="strengths">
+      <header><p class="label">WHAT CONNECTS THE WORK</p><h2>我处理的，是交界处的问题。</h2><p>把商品判断、数据规则、产品流程和 AI 能力连接成一条可落地的工作链。</p></header>
+      <div class="strength-stage">
+        <div class="strength-lead"><span>BUSINESS<br>TO<br>OUTCOME</span><p>把模糊需求翻译成可执行规则，再把系统结果送回经营现场。</p></div>
+        <div class="strength-rails">
+          <button class="strength-rail active"><span>01 / MERCHANDISE</span><strong>先理解业务决策</strong><p>熟悉企划、库存、调拨和 OTB，不从空泛的 AI 概念开始。</p><small>CTC · OTB · 老货盘点</small></button>
+          <button class="strength-rail"><span>02 / DATA</span><strong>让数据可解释</strong><p>处理指标口径、身份权限、筛选范围和异常值，让结果经得起对数。</p><small>权限治理 · 字典消歧</small></button>
+          <button class="strength-rail"><span>03 / PRODUCT</span><strong>把规则变成动作</strong><p>设计角色、状态、异常、审批与回滚，让产品进入真实工作链。</p><small>行政采购 · AI 项目治理</small></button>
+          <button class="strength-rail"><span>04 / AI</span><strong>只用在需要的位置</strong><p>AI 辅助理解和执行，但不生成业务事实，也不替代结果验证。</p><small>Useful, not decorative</small></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="principles">
+      <header><p class="label">THREE QUESTIONS</p><h2>先做判断，再看答案。</h2></header>
+      <div class="question-list" id="questionList"></div>
+    </section>
+
+    <section class="archive" id="archive">
+      <header><div><p class="label">PROJECT ARCHIVE</p><h2>完整项目档案</h2></div><p>从已上线系统到研究方案，每个项目都标注真实成熟度、本人职责与结果证据。</p></header>
+      <div class="archive-toolbar">
+        <div class="filters"><button class="active" data-filter="all">All</button><button data-filter="product">Products</button><button data-filter="governance">Governance</button><button data-filter="research">Research</button></div>
+        <div class="archive-actions"><span id="archiveCounter">11 PROJECTS</span></div>
+      </div>
+      <div class="archive-reel">
+        <div class="reel-track" id="reelGrid" aria-label="横向胶片项目浏览"></div>
+        <div class="reel-footer"><span>DRAG / TRACKPAD / SWIPE</span><div class="reel-progress"><i id="reelProgress"></i></div><span id="reelCount">01 / 11</span></div>
+      </div>
+    </section>
+
+    <section class="direction">
+      <div class="direction-copy"><p class="label">WHAT I WANT TO CHANGE</p><h2>让 AI 真正进入商品企划。</h2><p>减少重复整理和机械判断，让企划把更多时间放在商品结构、顾客需求和经营决策上，并用经营结果验证改变。</p></div>
+      <figure><img src="assets/interface-collage.png" alt="脱敏的商品企划数字化系统界面"><figcaption>FROM REPEATED WORK TO BETTER DECISIONS</figcaption></figure>
+    </section>
+
+    <section class="about">
+      <div class="portrait"><img src="图片/证件照.jpg" alt="王瑾俪"></div>
+      <div><p class="label">ABOUT</p><h2>王瑾俪</h2><p>业务 AI 产品经理 / 零售数字化</p><p>我希望在真实零售业务中，用数据产品与 AI 改善商品企划、经营协作和决策效率。先理解业务为什么这样运转，再决定哪里值得被系统化、哪里适合使用 AI。</p></div>
+    </section>
+  </main>
+
+  <footer><span>WANG JINLI / 2026</span><span>BUSINESS × DATA × AI</span><span>OPEN TO BUSINESS AI / RETAIL PRODUCT ROLES</span></footer>
+
+  <aside class="detail" id="detail" aria-hidden="true" aria-label="项目案例详情">
+    <nav class="detail-nav"><button id="detailClose">← Back to archive</button><span id="detailCount"></span><div><button id="detailPrev">← Prev</button><button id="detailNext">Next →</button></div></nav>
+    <article class="case-page">
+      <header class="case-hero">
+        <div class="case-hero-copy"><p class="case-kicker" id="detailType"></p><h2 id="detailTitle"></h2><p class="case-summary" id="detailSummary"></p><div class="case-meta"><span id="detailStatus"></span><b id="detailProof"></b></div></div>
+        <figure class="case-visual" id="detailVisual"></figure>
+      </header>
+      <section class="case-intro"><p class="case-section-label">CASE IN ONE LINE</p><h3 id="detailThesis"></h3><dl><div><dt>MY ROLE</dt><dd id="detailRole"></dd></div><div><dt>MATURITY</dt><dd id="detailMaturity"></dd></div></dl></section>
+      <section class="case-story"><div class="case-story-title"><p class="case-section-label">01 / BUSINESS CONTEXT</p><h3>先理解业务，<br>再设计产品。</h3></div><div class="case-story-body"><p class="case-lead" id="detailContext"></p><div class="case-users"><span>WHO IT SERVES</span><p id="detailUsers"></p></div><p id="detailProblem"></p></div></section>
+      <section class="case-solution"><div class="case-story-title"><p class="case-section-label">02 / SOLUTION</p><h3>我把问题<br>做成了什么。</h3></div><div><p class="case-lead" id="detailSolution"></p><ul class="feature-list" id="detailFeatures"></ul></div></section>
+      <section class="case-ai"><div><p class="case-section-label">03 / AI STRATEGY</p><h3 id="detailAiTitle"></h3><p id="detailAiNote"></p></div><div class="ai-split" id="detailAiSplit"></div></section>
+      <section class="case-flow"><div class="case-story-title"><p class="case-section-label">04 / FROM INPUT TO OUTCOME</p><h3>产品如何进入<br>真实工作链。</h3></div><ol id="detailProcess"></ol></section>
+      <section class="case-contribution"><div><p class="case-section-label">05 / MY CONTRIBUTION</p><h3>我具体负责的部分</h3><ul id="detailWork"></ul></div><div><p class="case-section-label">KEY PRODUCT DECISIONS</p><ul id="detailDecisions"></ul></div></section>
+      <section class="case-proof"><div><p>EVIDENCE & OUTCOME</p><strong id="detailProofLarge"></strong></div><p id="detailEvidence"></p></section>
+      <section class="case-boundary"><p>VALIDATION STATUS</p><h3 id="detailBoundary"></h3><div><span>NEXT STEP</span><p id="detailNextStep"></p></div></section>
+      <button class="case-next" id="detailNextCase"><span>NEXT CASE</span><strong id="detailNextTitle"></strong><i>↗</i></button>
+    </article>
+  </aside>
+  <script src="app.js"></script>
+</body>
+</html>
