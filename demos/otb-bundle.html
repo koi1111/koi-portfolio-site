@@ -1,0 +1,93 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OTB 管理系统</title><style>:root{--blue:#1f5cad;--orange:#d27a2c;--ink:#272a30;--muted:#888783;--line:#e5e3df;--bg:#fbfbfa;--green:#4c8857;--red:#bc574b;--purple:#f5f3fb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+button,select,input{font:inherit}
+.otb-top{height:54px;padding:0 32px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--line)}
+.otb-top>b{font-size:18px;color:var(--blue)}
+.otb-top b i{font-style:normal;border:2px solid var(--blue);border-radius:5px;padding:0 4px;margin-right:6px}
+.otb-top div{display:flex;align-items:center;gap:13px}
+.otb-top strong{background:#f4f3f1;padding:6px 10px;border-radius:15px}
+.otb-top button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:5px 12px}
+.online{color:#84847d}
+.online:first-letter{color:#68a973}
+.filter-shell{min-height:48px;background:var(--purple);border-bottom:1px solid var(--line);padding:0 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.filter-shell>button{border:0;background:none;font-weight:700;cursor:pointer}
+.filter-shell>span b{color:var(--blue)}
+.filters{flex-basis:100%;padding:12px 0;display:flex;gap:10px;align-items:end}
+.filters label{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:10px}
+.filters select{height:34px;min-width:145px;border:1px solid var(--line);border-radius:5px;background:#fff;padding:0 8px}
+.filters button,.upload button{height:34px;border:1px solid var(--line);background:#fff;border-radius:5px;padding:0 13px;cursor:pointer}
+.primary{background:var(--blue)!important;color:#fff;border:0!important;border-radius:5px;padding:8px 14px}
+.otb-tabs{height:48px;padding:0 32px;background:#fff;border-bottom:1px solid var(--line);display:flex;gap:10px;position:sticky;top:0;z-index:5}
+.otb-tabs button{border:0;background:none;padding:0 17px;color:#77736d;cursor:pointer}
+.otb-tabs button.active{color:var(--blue);font-weight:700;border-bottom:2px solid var(--blue)}
+.otb-tabs button:last-child{margin-left:auto}
+main{padding:20px 32px;max-width:1500px;margin:auto}
+.tab-view{display:none}
+.tab-view.active{display:block}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:18px;box-shadow:0 4px 12px rgba(43,49,59,.035)}
+.card h2{margin:0 0 20px;color:var(--blue);font-size:16px}
+.card h2 small{font-weight:400;color:#aaa7a1}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:13px}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:15px;min-height:120px}
+.kpi.accent{border-top:3px solid var(--orange)}
+.kpi span{color:var(--muted);font-size:11px}
+.kpi b{display:block;color:var(--blue);font-size:24px;margin:8px 0}
+.kpi.accent b{color:var(--orange)}
+.kpi small em{font-style:normal;color:var(--green);font-weight:700}
+.matrix{display:grid;grid-template-columns:180px repeat(5,1fr);border-top:1px solid var(--line)}
+.matrix div{padding:10px;border-bottom:1px solid var(--line);text-align:center}
+.matrix .head{color:var(--blue);font-weight:700}
+.matrix .label{text-align:left;font-weight:700}
+.matrix .section{grid-column:1/-1;text-align:left;background:#eef4fb;color:var(--blue)}
+.positive{background:#eef6ef;color:#47734e;font-weight:700}
+.negative{background:#fbefed;color:#9b4b42;font-weight:700}
+.lights{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.light{border:1px solid var(--line);border-radius:8px;padding:15px}
+.light b{display:block;font-size:15px}
+.light strong{font-size:25px}
+.light i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:5px}
+.light small{display:block;color:var(--muted);margin-top:7px}
+.chart{height:260px;display:flex;align-items:end;gap:10px;padding:20px 10px;border-bottom:1px solid var(--line)}
+.chart i{flex:1;height:var(--h);background:linear-gradient(var(--blue),#7ba6dc);border-radius:4px 4px 0 0;position:relative}
+.chart i:after{content:attr(data-w);position:absolute;bottom:-25px;left:50%;transform:translateX(-50%);font-style:normal;font-size:10px;color:var(--muted)}
+.line-chart{height:280px}
+.line-chart svg{width:100%;height:230px;background:repeating-linear-gradient(0deg,#fff,#fff 45px,#eee 46px)}
+.line-chart polyline{fill:none;stroke:var(--blue);stroke-width:3}
+.line-chart .target{stroke:var(--orange);stroke-dasharray:8 6;stroke-width:2}
+.legend{text-align:center;color:var(--muted)}
+.stock-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.stock-cell{padding:13px;border:1px solid var(--line);border-radius:6px;text-align:center}
+.stock-cell b{display:block;color:var(--blue);font-size:18px}
+.brand-table{display:grid;grid-template-columns:1.5fr repeat(4,1fr)}
+.brand-table div{padding:11px;border-bottom:1px solid var(--line)}
+.brand-table .head{color:var(--blue);font-weight:700;background:#f6f8fb}
+.upload p{color:var(--muted)}
+.upload span{margin-left:12px;color:var(--green)}
+.config-grid{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
+.config-grid label{display:flex;flex-direction:column;gap:5px;color:var(--muted)}
+.config-grid input{height:35px;border:1px solid var(--line);border-radius:5px;padding:0 9px}
+@media(max-width:900px){.kpis{grid-template-columns:1fr 1fr}
+.lights,.stock-grid{grid-template-columns:1fr 1fr}
+.matrix{grid-template-columns:130px repeat(5,150px);overflow:auto}
+.otb-tabs{overflow:auto;padding:0 12px}
+.otb-tabs button{white-space:nowrap}
+.filters{overflow:auto}
+}
+@media(max-width:550px){.otb-top,.filter-shell{padding-left:14px;padding-right:14px}
+main{padding:14px}
+.kpis,.lights,.stock-grid{grid-template-columns:1fr}
+.otb-top .online,.otb-top button{display:none}
+}
+:where(h1,h2,h3,.kpi b,.light b,.stock-cell b){text-wrap:balance;word-break:auto-phrase;overflow-wrap:normal}
+:where(button,.pill,.online,.otb-tabs button,.filter-shell label,.brand-table .head){white-space:nowrap;word-break:keep-all}
+.brand-table{min-width:680px}.tab-view:has(.brand-table){overflow-x:auto}
+</style></head><body><header class="otb-top"><b><i>▤</i> OTB 管理系统</b><div><span class="online">● 在线</span><strong>演示用户</strong><button>退出</button></div></header><section class="filter-shell"><button id="otbFilterToggle">▶　筛选条件</button><span>当前周：<b>第 33 周（2026）</b></span><div class="filters" id="otbFilters" hidden><label>时间范围<select id="otbPeriod"><option value="month">8 月当月</option><option value="ytd">今年 YTD</option></select></label><label>品牌组<select id="otbGroup"><option value="all">全部品牌组</option><option value="sport">运动鞋服组</option><option value="life">生活方式组</option></select></label><label>品牌<select id="otbBrand"><option value="all">全部品牌</option><option value="north">Northline</option><option value="motion">Motion Lab</option><option value="mori">Mori Days</option></select></label><button id="otbReset">↺ 重置</button><button class="primary" id="otbApply">应用筛选</button></div></section><nav class="otb-tabs"><button class="active" data-tab="overview">总览</button><button data-tab="sales">销售</button><button data-tab="margin">毛利</button><button data-tab="stock">库存滚动</button><button data-tab="usage">OTB使用率</button><button data-tab="premanage">OTB预管理</button><button data-tab="config">⚙ 配置</button></nav><main><section class="tab-view active" data-view="overview"><article class="card"><h2>全公司汇总</h2><div class="kpis" id="otbKpis"></div></article><article class="card"><h2>主要指标 <small>— 销售 / 毛利 / 库存 / OTB · 横向：至今目标 / 目标达成 / 月度实际 / 过去12周 / 上周</small></h2><div class="matrix" id="otbMatrix"></div></article></section><section class="tab-view" data-view="sales"><article class="card"><h2>销售达成三色灯 <small>— 按品牌组</small></h2><div class="lights" id="salesLights"></div></article><article class="card"><h2>销售额（周度）</h2><div class="chart" id="salesChart"></div></article></section><section class="tab-view" data-view="margin"><article class="card"><h2>各采购组毛利率</h2><div class="lights" id="marginLights"></div></article><article class="card"><h2>销售毛利率（周度 · %）</h2><div class="line-chart"><svg viewBox="0 0 900 240" preserveAspectRatio="none"><polyline points="0,170 120,150 240,164 360,112 480,125 600,88 720,104 900,64"/><polyline class="target" points="0,115 900,115"/></svg><div class="legend">— 实际毛利率　┄ 目标毛利率</div></div></article></section><section class="tab-view" data-view="stock"><article class="card"><h2>库存金额（OTB 核心视图）<small>— 月末库存 · 门店口径 · 模拟万元</small></h2><div class="stock-grid" id="stockGrid"></div></article></section><section class="tab-view" data-view="usage"><article class="card"><h2>OTB 使用率三色灯</h2><div class="lights" id="usageLights"></div></article><article class="card"><h2>品牌下钻</h2><div class="brand-table" id="usageTable"></div></article></section><section class="tab-view" data-view="premanage"><article class="card"><h2>OTB 预管理三色灯 <small>— H2 秋冬 · 计划下单额</small></h2><div class="lights" id="preLights"></div></article><article class="card upload"><b>导入预管理数据</b><p>演示版不读取真实 Excel，点击后模拟一次格式校验。</p><button id="fakeUpload">选择模拟文件</button><span id="uploadState"></span></article></section><section class="tab-view" data-view="config"><article class="card"><h2>全局参数</h2><div class="config-grid"><label>目标售罄率<input value="75%"></label><label>目标周转天数<input value="90"></label><label>OTB 黄灯阈值<input value="80%"></label><button class="primary" id="saveConfig">保存模拟配置</button></div><p id="configState"></p></article></section></main><script>const $=s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];const data={all:{sales:'3934.3万',ach:'70.5%',margin:'35.8%',stock:'3.7亿',warehouse:'5.6亿',dsi:'89.8天',orders:'2.8亿'},sport:{sales:'1860.6万',ach:'76.8%',margin:'38.4%',stock:'1.5亿',warehouse:'2.2亿',dsi:'76.4天',orders:'1.3亿'},life:{sales:'1128.9万',ach:'63.2%',margin:'33.1%',stock:'1.1亿',warehouse:'1.8亿',dsi:'104.2天',orders:'0.8亿'}};
+$('#otbFilters').style.display='none';
+$('#otbFilterToggle').addEventListener('click',e=>{e.stopImmediatePropagation();const f=$('#otbFilters'),show=f.style.display==='none';f.style.display=show?'flex':'none';e.currentTarget.textContent=(show?'▼':'▶')+'　筛选条件'},true);
+$('#otbApply').addEventListener('click',()=>{$('#otbFilters').style.display='none'},true);
+function render(){const d=data[$('#otbGroup').value];$('#otbKpis').innerHTML=[['销售额（当月）',d.sales,`达成 ${d.ach}　至今目标 5579.0万`,'accent'],['销售毛利率',d.margin,'目标 36.7%　差值 -0.9pp',''],['库存金额',d.stock,`在仓库存 ${d.warehouse}`,''],['库存周转天数',d.dsi,'仅门店 · 滚动7天',''],['已下单金额',d.orders,'按到货月 · 销售价','']].map(x=>`<article class="kpi ${x[3]}"><span>${x[0]}</span><b>${x[1]}</b><small>${x[2]}</small></article>`).join('');const rows=[['销售','销售额','5579.0万',d.ach,d.sales,'2.8亿','2543.2万'],['','销售增长率','—','—','-58.9%','30.4%','39.2%'],['','平均售价','—','—','102.8','95.2','103.5'],['毛利','毛利率','36.7%',d.margin,d.margin,'34.9%','36.1%'],['库存','库存金额','—','—',d.stock,'3.9亿','3.7亿']];$('#otbMatrix').innerHTML=`<div></div>${['至今目标','目标达成','月度实际','过去12周','上周'].map(x=>`<div class="head">${x}</div>`).join('')}`+rows.map(r=>(r[0]?`<div class="section">${r[0]}</div>`:'')+`<div class="label">${r[1]}</div>${r.slice(2).map(v=>`<div class="${String(v).startsWith('-')?'negative':String(v).match(/30\.4|39\.2/)?'positive':''}">${v}</div>`).join('')}`).join('')}
+function lights(id,values){$(id).innerHTML=values.map(x=>`<article class="light"><b><i style="--c:${x[2]}"></i>${x[0]}</b><strong>${x[1]}</strong><small>${x[3]}</small></article>`).join('')}
+function table(){const rows=[['Northline','460','392','85%','正常'],['Motion Lab','380','248','65%','采购偏慢'],['Mori Days','320','341','107%','超出计划'],['Harbor Field','290','178','61%','采购偏慢']];$('#usageTable').innerHTML=`${['品牌','OTB计划','已采购','使用率','状态'].map(x=>`<div class="head">${x}</div>`).join('')}${rows.flat().map(x=>`<div>${x}</div>`).join('')}`}
+$('.otb-tabs button').forEach(b=>b.onclick=()=>{$('.otb-tabs button').forEach(x=>x.classList.toggle('active',x===b));$('.tab-view').forEach(v=>v.classList.toggle('active',v.dataset.view===b.dataset.tab))});$('#otbFilterToggle').onclick=()=>{const f=$('#otbFilters');f.hidden=!f.hidden;$('#otbFilterToggle').textContent=(f.hidden?'▶':'▼')+'　筛选条件'};$('#otbApply').onclick=()=>{render();$('#otbFilters').hidden=true;$('#otbFilterToggle').textContent='▶　筛选条件'};$('#otbReset').onclick=()=>{$('#otbGroup').value='all';$('#otbBrand').value='all';render()};$('#fakeUpload').onclick=()=>{const s=$('#uploadState');s.textContent='正在校验字段…';setTimeout(()=>s.textContent='✓ 模拟文件通过：12 个品牌 / 0 个错误',700)};$('#saveConfig').onclick=()=>$('#configState').textContent='✓ 模拟配置已在当前会话生效';render();lights('#salesLights',[['运动鞋服组','76.8%','#d99b2b','距离目标 3.2pp'],['生活方式组','63.2%','#d65d4d','需关注低达成品牌'],['户外组','86.4%','#64a268','达成节奏正常'],['潮流组','71.5%','#d99b2b','销售略慢']]);lights('#marginLights',[['运动鞋服组','38.4%','#64a268','目标 37.0%'],['生活方式组','33.1%','#d65d4d','目标 36.0%'],['户外组','39.8%','#64a268','目标 38.0%'],['潮流组','35.2%','#d99b2b','目标 36.0%']]);lights('#usageLights',[['运动鞋服组','85%','#64a268','计划 840 / 已采购 714'],['生活方式组','72%','#d99b2b','计划 610 / 已采购 439'],['户外组','105%','#d65d4d','需提交 OTB 调整'],['潮流组','61%','#d99b2b','采购节奏偏慢']]);lights('#preLights',[['春季','92%','#64a268','计划下单节奏正常'],['夏季','108%','#d65d4d','超计划 8%'],['秋季','67%','#d99b2b','部分品牌未下单'],['冬季','42%','#d99b2b','距离到货期尚早']]);$('#salesChart').innerHTML=[72,48,86,64,91,76,58,82,68,94,73,88].map((h,i)=>`<i style="--h:${h}%" data-w="W${i+22}"></i>`).join('');$('#stockGrid').innerHTML=['8月 3.7亿','9月 4.1亿','10月 4.3亿','11月 3.9亿','12月 3.4亿','1月 3.0亿','2月 2.8亿','3月 2.6亿','4月 2.9亿','5月 3.2亿','6月 3.5亿','7月 3.8亿'].map(x=>{const [m,v]=x.split(' ');return `<div class="stock-cell"><span>${m}</span><b>${v}</b><small>期末预测</small></div>`}).join('');table();
+</script></body></html>

@@ -1,0 +1,117 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>行政采购协同平台 · Buyflow</title><style>:root{--purple:#5750e9;--pale:#f1f2ff;--bg:#f5f6fb;--ink:#172033;--muted:#798295;--line:#e4e7f0;--green:#16b47e;--yellow:#f5c759;--red:#e05252}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+button,input,select{font:inherit}
+.buy-shell{min-height:100vh;display:grid;grid-template-columns:215px 1fr}
+.buy-shell>aside{height:100vh;position:sticky;top:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:auto}
+.buy-logo{padding:17px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.buy-logo>i{display:grid;place-items:center;width:38px;height:38px;background:var(--purple);color:#fff;border-radius:9px;font-style:normal;font-size:22px}
+.buy-logo span{display:flex;flex-direction:column}
+.buy-logo b{font-size:16px}
+.buy-logo small{color:var(--muted);font:10px ui-monospace,monospace}
+.buy-shell nav{padding:12px 10px;display:grid}
+.buy-shell nav a{padding:8px 10px;color:#606a7d;border-radius:7px;cursor:pointer}
+.buy-shell nav a.active{background:#eceeff;color:var(--purple);font-weight:700}
+.buy-shell nav small{padding:12px 10px 4px;color:#9ba2b0}
+.buy-shell nav em{font-style:normal;background:#ebe9ff;color:var(--purple);padding:2px 5px;border-radius:4px}
+.buy-user{margin-top:auto;border-top:1px solid var(--line);padding:13px;display:flex;gap:9px}
+.buy-user>i,.avatar{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--purple);color:#fff;font-style:normal}
+.buy-user span{display:flex;flex-direction:column}
+.buy-user small{color:var(--muted)}
+main{min-width:0}
+main>header{height:54px;background:#fff;border-bottom:1px solid var(--line);padding:0 27px;display:flex;align-items:center;justify-content:space-between;color:var(--muted)}
+main>header em{font-style:normal;background:var(--red);color:#fff;border-radius:99px;padding:0 5px}
+.buy-content{padding:25px 27px;max-width:1400px;margin:auto}
+.back{border:0;background:none;color:var(--muted)}
+.purchase-title{display:flex;align-items:center;gap:9px;margin:11px 0 16px}
+.purchase-title h1{margin:0;font-size:23px}
+.pill{padding:5px 10px;border-radius:99px;background:#eef0fb;color:#565a93;font-size:10px}
+.pill.yellow{background:#fff1b9;color:#9c6715}
+.pill.purple{background:#e6e7ff;color:#4740c8}
+.purpose{padding:15px 18px;background:#eef1ff;border-left:3px solid #7c75ff;border-radius:9px;margin-bottom:12px}
+.budget{position:relative;border:1px solid #827cff;border-radius:9px;padding:12px 15px;color:var(--purple);overflow:hidden}
+.budget span{float:right;font-size:10px}
+.budget i{position:absolute;left:15px;right:15px;bottom:7px;height:5px;background:linear-gradient(90deg,var(--purple) 3%,#e5e7ef 3%);border-radius:10px}
+.buy-steps{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:12px 0;display:grid;grid-template-columns:repeat(4,1fr)}
+.bstep{display:flex;align-items:center;gap:8px;position:relative;color:#9ca3b2}
+.bstep:not(:last-child):after{content:"";height:2px;background:#e3e5ed;position:absolute;left:34px;right:0}
+.bstep i{position:relative;z-index:1;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#eff1f7;font-style:normal}
+.bstep.done{color:#178a67;font-weight:700}
+.bstep.done i{background:var(--green);color:#fff}
+.bstep.active{color:var(--purple);font-weight:700}
+.bstep.active i{background:var(--purple);color:#fff}
+.approval-card,.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px}
+.approval-card{margin-bottom:14px}
+.approval-card h3,.card h3{margin:0 0 12px;font-size:14px}
+.approval-card h3 span{color:var(--purple);background:#eeeefe;padding:4px 8px;border-radius:10px}
+.approval-chain{display:flex;align-items:center;gap:9px}
+.approval-chain b{padding:7px 12px;background:#f1f2f6;border:1px solid #d9dde8;border-radius:99px;color:#9aa1af}
+.approval-chain b.active{color:var(--purple);border-color:#8f89ff;background:#f1f1ff}
+.approval-card p{color:var(--muted);margin:12px 0 0}
+.buy-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:14px}
+.buy-grid section{display:grid;gap:14px;align-content:start}
+.info-card dl{display:grid;grid-template-columns:95px 1fr;gap:9px;margin:0}
+.info-card dt{color:var(--muted)}
+.info-card dd{margin:0}
+.money{color:var(--purple);font-size:18px;font-weight:800}
+.item-table{display:grid;grid-template-columns:1.3fr .8fr .8fr .8fr}
+.item-table div{padding:9px;border-bottom:1px solid var(--line)}
+.item-table .head{color:var(--muted);background:#f8f9fc;font-size:10px}
+.next-card{border-color:#d8d6ff}
+.next-note{background:#dfebff;color:#345fa3;padding:12px;border-radius:7px;margin-bottom:12px}
+.buy-actions{display:grid;gap:8px}
+.buy-actions button{height:38px;border:0;border-radius:7px;background:var(--purple);color:#fff;font-weight:700;cursor:pointer}
+.buy-actions button.secondary{background:#fff;color:var(--purple);border:1px solid #a8a4ff}
+.buy-actions button.danger{background:#fff;color:var(--red);border:1px solid #f0bbbb}
+.audit-card #buyAudit{display:grid;gap:8px}
+.audit-card #buyAudit div{border-left:2px solid var(--purple);padding-left:9px}
+.audit-card small{display:block;color:var(--muted)}
+.supplier-layer{position:fixed;inset:0;background:rgba(25,27,39,.5);z-index:30;display:none;place-items:center;padding:20px}
+.supplier-layer.open{display:grid}
+.phone{width:min(390px,95vw);height:min(760px,94vh);background:#eef0f4;border:8px solid #252733;border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.32)}
+.phone>header{height:88px;background:var(--purple);color:#fff;padding:16px;display:flex;flex-direction:column;position:relative}
+.phone>header button{position:absolute;right:12px;top:8px;border:0;background:none;color:#fff;font-size:24px}
+.phone>header b{font-size:17px}
+.phone>header small{opacity:.8}
+.phone-scroll{height:calc(100% - 88px);overflow:auto;padding:12px}
+.phone section,.warning{background:#fff;border-radius:9px;padding:12px;margin-bottom:10px}
+.phone dl{display:grid;grid-template-columns:90px 1fr;gap:7px;margin:0}
+.phone dt{color:var(--muted)}
+.phone dd{margin:0;text-align:right}
+.red{color:var(--red);font-weight:700}
+.warning{background:#fff2f2;border:1px solid #f0b5b5;color:#8d3434}
+.store-order{border:2px solid #7186ed}
+.store-order h3{background:#e5e9ff;color:#3f4fa8;margin:-12px -12px 9px;padding:9px}
+.store-order>div{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)}
+.store-order label{display:block;color:var(--muted);margin-top:8px}
+.store-order select,.store-order input{display:block;width:100%;height:35px;border:1px solid var(--line);border-radius:6px;padding:0 8px}
+.phone-scroll>button{width:100%;height:42px;border:0;border-radius:7px;margin-bottom:8px;font-weight:700}
+.ship{background:var(--purple);color:#fff}
+.reject{background:#fff;border:1px solid var(--line)!important;color:var(--red)}
+.token-note{text-align:center;color:var(--muted);font-size:10px}
+@media(max-width:900px){.buy-grid{grid-template-columns:1fr}
+.buy-shell{grid-template-columns:70px 1fr}
+.buy-logo span,.buy-shell nav small,.buy-shell nav a{font-size:0}
+.buy-shell nav a{height:37px}
+.buy-shell nav a::first-letter{font-size:15px}
+.buy-user{display:none}
+.buy-steps{grid-template-columns:1fr 1fr;gap:10px}
+.bstep:after{display:none}
+}
+@media(max-width:560px){.buy-shell{grid-template-columns:1fr}
+.buy-shell>aside{display:none}
+.buy-content{padding:14px}
+.purchase-title{flex-wrap:wrap}
+.budget span{display:none}
+.approval-chain{overflow:auto}
+.item-table{grid-template-columns:1.2fr repeat(3,90px);overflow:auto}
+}
+:where(h1,h2,h3,.bstep b,.phone>header b,.store-order h3){text-wrap:balance;word-break:auto-phrase;overflow-wrap:normal}
+:where(button,.pill,.status,.buy-shell nav a,.buy-steps span,.approval-chain span,th){white-space:nowrap;word-break:keep-all}
+.item-table{min-width:620px}.item-table-wrap{overflow-x:auto}
+</style></head><body><div class="buy-shell"><aside><div class="buy-logo"><i>◇</i><span><b>行政采购</b><small>buyflow v0.1.0</small></span></div><nav><a>▦　概览</a><a>ⓘ　操作指南</a><small>🛒 日常采购</small><a>⊕　发起采购</a><a class="active">🛒　采购单</a><a>▱　供应商管理</a><a>⌘　商品库</a><small>🧑 员工资产　<em>二期</em></small><a>♙　入职配置</a><a>♙　离职回收</a><a>⚙　调岗变更</a><a>▣　资产台账</a><small>📦 库存 / 调拨</small><a>▭　库存台账</a><a>⇄　店间调拨</a><a>⌖　门店信息</a><a>⌁　工程工单</a><a>☑　耗材盘点</a></nav><div class="buy-user"><i>演</i><span><b>演示用户</b><small>采购执行</small></span></div></aside><main><header><span>行政采购协同平台　/　<b>采购单 / #P-1002</b></span><div>🔔 <em>3</em>　<span class="avatar">演</span> 演示用户　↗</div></header><section class="buy-content"><button class="back">← 返回采购单列表</button><div class="purchase-title"><h1>采购单 #P-1002</h1><span class="pill yellow" id="buyStatusTop">分拆处理中</span><span class="pill purple">钉钉节点 · 待区部审批</span><span class="pill">◷ 普通</span></div><div class="purpose">▢　<b>用途说明：</b>新店开业前补陈列道具＋试衣镜</div><div class="budget"><b>商业中心 本月预算占用：¥1,175 / ¥60,000 · 还剩 98%</b><span>数据 mock · 真实上线接财务</span><i></i></div><div class="buy-steps" id="buySteps"></div><section class="approval-card"><h3>♧　钉钉审批链 · 4 级　<span>当前等 区部</span></h3><div class="approval-chain"><b class="active">1　区部</b><i>→</i><b>2　人事</b><i>→</i><b>3　财务</b><i>→</i><b>4　营总</b></div><p id="approvalHint">💡 区部现在在钉钉里 · 通过后系统自动推进下一级</p></section><div class="buy-grid"><section><article class="card info-card"><h3>▧　单据信息</h3><dl><dt>发起人</dt><dd>陈屿</dd><dt>部门</dt><dd>商业中心</dd><dt>门店</dt><dd>星港二期店</dd><dt>收货地址</dt><dd>上海市浦东新区星港路 88 号 B1</dd><dt>期望到货</dt><dd>2026-08-21</dd><dt>创建时间</dt><dd>2026-08-14 10:20</dd><dt>总金额</dt><dd class="money">¥1,175.00</dd></dl></article><article class="card"><h3>商品与供应商归属</h3><div class="item-table" id="buyItems"></div></article></section><section><article class="card next-card"><h3>ϟ　下一步</h3><div class="next-note" id="nextNote">系统已按“首选供应商”自动初分。钉钉审批完成后才真正下发。</div><div class="buy-actions" id="buyActions"></div></article><article class="card audit-card"><h3>连续状态记录</h3><div id="buyAudit"></div></article></section></div></section></main></div><div class="supplier-layer" id="supplierLayer"><div class="phone"><header><button id="supplierClose">×</button><b>📦 行政采购需求</b><small>来自「演示公司 · 商业中心」</small></header><div class="phone-scroll"><section><dl><dt>供应商</dt><dd id="supplierName">晨川办公</dd><dt>单据号</dt><dd>#P-1002-A</dd><dt>期望到货</dt><dd>2026-08-21</dd><dt>发往</dt><dd class="red">2 家门店</dd></dl></section><div class="warning">⚠️ 本单涉及 2 个收货门店，每个门店需分别填写快递信息。</div><section class="store-order"><h3>📍 门店 1 / 2 · 星港二期店</h3><p>地址：上海市浦东新区星港路 88 号 B1</p><div><b>🪞 全身试衣镜</b><span>×2</span></div><div><b>🧰 陈列工具套装</b><span>×3</span></div><label>快递公司<select><option>顺丰速运</option><option>京东物流</option></select></label><label>物流单号<input id="trackingNo" value="SF-MOCK-20818"></label></section><button class="ship" id="supplierShip">确认发货</button><button class="reject" id="supplierReject">无法接单 / 缺货</button><p class="token-note">本链接 7 天有效 · 一次性使用 · 提交后不可撤销</p></div></div></div><script>const $=s=>document.querySelector(s);const steps=['区域 HR 提交','钉钉审批','供应商拆单','下发＋签收'];const items=[['全身试衣镜','2','晨川办公','¥680'],['陈列工具套装','3','晨川办公','¥315'],['标签打印纸','6','远桥物资','¥180']];let state='approval',supplier='晨川办公',audit=[['采购申请已提交','10:20 · 商业中心 / 星港二期店'],['已按首选供应商完成初分','10:21 · 2 家供应商 / 3 个商品']];const indexes={approval:1,split:2,dispatch:3,shipped:3,received:4,declined:2};
+function render(){const idx=indexes[state];$('#buySteps').innerHTML=steps.map((x,i)=>`<div class="bstep ${i<idx?'done':i===idx?'active':''}"><i>${i<idx?'✓':i+1}</i><span>${x}</span></div>`).join('');$('#buyItems').innerHTML=`${['商品','数量','归属供应商','金额'].map(x=>`<div class="head">${x}</div>`).join('')}${items.flat().map(x=>`<div>${x}</div>`).join('')}`;const configs={approval:['等待钉钉审批','模拟通过区部审批','approve','撤销采购单'],split:['供应商归属确认','确认拆单并下发','dispatch','调整归属'],dispatch:['已生成供应商 H5','打开供应商页面','open','撤销下发'],shipped:['供应商已发货','模拟到货签收','receive','查看物流'],received:['采购闭环完成','重新演示','reset','查看月度对账'],declined:['供应商无法接单','改派远桥物资','reassign','保留拒绝记录']};const c=configs[state];$('#nextNote').textContent=state==='approval'?'审批通过后，系统才生成一次性供应商访问令牌。':state==='declined'?'供应商拒绝原因已记录，采购执行可改派并重新推送。':'系统状态、供应商操作与签收结果会连续记录。';$('#buyActions').innerHTML=`<button data-action="${c[2]}">${c[1]}</button><button class="secondary">${c[3]}</button>`;$('#buyStatusTop').textContent=c[0];$('#buyAudit').innerHTML=audit.map(x=>`<div><b>${x[0]}</b><small>${x[1]}</small></div>`).join('');$('[data-action]').onclick=act}
+function add(t,d){audit.unshift([t,`${new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})} · ${d}`])}
+function act(e){const a=e.currentTarget.dataset.action;if(a==='approve'){state='split';add('区部审批通过','等待后续模拟审批完成')}else if(a==='dispatch'){state='dispatch';add('钉钉审批完成并生成采购单','已按供应商拆为 2 张子单')}else if(a==='open'){$('#supplierLayer').classList.add('open');return}else if(a==='receive'){state='received';add('申请方完成签收','数量一致，无异常')}else if(a==='reassign'){supplier='远桥物资';state='dispatch';items[0][2]=supplier;items[1][2]=supplier;add('采购执行完成供应商改派','一次性链接已重新生成')}else if(a==='reset'){state='approval';supplier='晨川办公';items[0][2]=supplier;items[1][2]=supplier;audit=[['采购申请已提交','10:20 · 商业中心 / 星港二期店'],['已按首选供应商完成初分','10:21 · 2 家供应商 / 3 个商品']]}render()}
+$('#supplierClose').onclick=()=>$('#supplierLayer').classList.remove('open');$('#supplierShip').onclick=()=>{state='shipped';add('供应商确认发货',`模拟运单 ${$('#trackingNo').value}`);$('#supplierLayer').classList.remove('open');render()};$('#supplierReject').onclick=()=>{state='declined';add(`${supplier}拒绝接单`,'模拟原因：部分商品临时缺货');$('#supplierLayer').classList.remove('open');render()};render();
+</script></body></html>
