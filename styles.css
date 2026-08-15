@@ -202,3 +202,63 @@ h2{font-size:clamp(2.35rem,4vw,4.3rem)}
 .demo-loading button{margin-top:.35rem;border:1px solid #c8ccd4!important;border-radius:999px;background:white!important;color:#343943!important;padding:.45rem .7rem!important;font-size:.62rem}
 .demo-browser.demo-ready .demo-loading{opacity:0;visibility:hidden;pointer-events:none}
 @keyframes demo-spin{to{transform:rotate(1turn)}}
+
+/* v18 — keep the cover inside one viewport without cropping its artwork. */
+.hero{
+  height:calc(100dvh - 24px);
+  min-height:620px;
+  max-height:820px;
+  overflow:hidden;
+  grid-template-columns:minmax(0,.95fr) minmax(340px,1.05fr);
+  gap:clamp(2rem,4vw,4.5rem);
+  padding-top:clamp(5.25rem,8vh,6.5rem);
+  padding-bottom:clamp(2.5rem,5vh,4rem);
+}
+.hero-copy{min-width:0;align-self:center}
+.hero h1{font-size:clamp(3.35rem,5.25vw,5.55rem);line-height:.88;max-width:9.2ch}
+.hero-cn{margin:1.55rem 0;line-height:1.6}
+.hero-media{width:100%;max-width:560px;min-width:0;justify-self:end;align-self:center}
+.hero-media img{width:100%;height:auto;max-height:calc(100dvh - 180px);object-fit:contain;transform:rotate(.65deg)}
+.archive-ambient{background-image:url("assets/hero-collage.webp")}
+
+/* The loading layer is removed after load; the iframe owns the click surface. */
+.demo-browser iframe{position:relative;z-index:5;pointer-events:auto;touch-action:auto}
+.demo-loading{z-index:6}
+.demo-browser.demo-ready .demo-loading{display:none}
+
+@media(max-width:900px){
+  .hero{height:auto;min-height:auto;max-height:none;overflow:visible;grid-template-columns:1fr;padding-top:6.25rem;padding-bottom:3rem}
+  .hero h1{font-size:clamp(3.6rem,11vw,5.6rem)}
+  .hero-media{max-width:660px;justify-self:start}
+  .hero-media img{max-height:none}
+}
+@media(max-width:620px){
+  .hero h1{font-size:clamp(3rem,14.5vw,4.35rem)}
+  .hero-cn{margin:1.35rem 0}
+}
+@media(max-height:680px) and (min-width:901px){
+  .hero{min-height:560px;padding-top:4.75rem;padding-bottom:2rem}
+  .hero h1{font-size:clamp(3rem,4.8vw,4.75rem)}
+  .hero-cn{font-size:.92rem;margin:1.1rem 0}
+  .hero-media{max-width:500px}
+}
+
+/* v20 — keep interactive sections steady and let detail headings scroll normally. */
+@media(min-width:901px){
+  .strength-stage{align-items:start}
+  .strength-lead{height:390px;min-height:390px;align-self:start}
+  .strength-rails{min-height:390px}
+}
+.case-story-title h3{position:static;top:auto}
+.case-boundary{display:none}
+
+/* v21 — treat the outcome panel as a standalone card. */
+.case-proof{
+  margin-bottom:clamp(2rem,3vw,2.75rem);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  box-shadow:0 22px 60px rgba(0,0,0,.14);
+}
+@media(max-width:620px){
+  .case-proof{margin-bottom:1.5rem;border-radius:15px}
+}

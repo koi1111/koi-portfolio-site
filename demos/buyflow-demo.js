@@ -1,5 +1,303 @@
-const $=s=>document.querySelector(s);const steps=['区域 HR 提交','钉钉审批','供应商拆单','下发＋签收'];const items=[['全身试衣镜','2','晨川办公','¥680'],['陈列工具套装','3','晨川办公','¥315'],['标签打印纸','6','远桥物资','¥180']];let state='approval',supplier='晨川办公',audit=[['采购申请已提交','10:20 · 商业中心 / 星港二期店'],['已按首选供应商完成初分','10:21 · 2 家供应商 / 3 个商品']];const indexes={approval:1,split:2,dispatch:3,shipped:3,received:4,declined:2};
-function render(){const idx=indexes[state];$('#buySteps').innerHTML=steps.map((x,i)=>`<div class="bstep ${i<idx?'done':i===idx?'active':''}"><i>${i<idx?'✓':i+1}</i><span>${x}</span></div>`).join('');$('#buyItems').innerHTML=`${['商品','数量','归属供应商','金额'].map(x=>`<div class="head">${x}</div>`).join('')}${items.flat().map(x=>`<div>${x}</div>`).join('')}`;const configs={approval:['等待钉钉审批','模拟通过区部审批','approve','撤销采购单'],split:['供应商归属确认','确认拆单并下发','dispatch','调整归属'],dispatch:['已生成供应商 H5','打开供应商页面','open','撤销下发'],shipped:['供应商已发货','模拟到货签收','receive','查看物流'],received:['采购闭环完成','重新演示','reset','查看月度对账'],declined:['供应商无法接单','改派远桥物资','reassign','保留拒绝记录']};const c=configs[state];$('#nextNote').textContent=state==='approval'?'审批通过后，系统才生成一次性供应商访问令牌。':state==='declined'?'供应商拒绝原因已记录，采购执行可改派并重新推送。':'系统状态、供应商操作与签收结果会连续记录。';$('#buyActions').innerHTML=`<button data-action="${c[2]}">${c[1]}</button><button class="secondary">${c[3]}</button>`;$('#buyStatusTop').textContent=c[0];$('#buyAudit').innerHTML=audit.map(x=>`<div><b>${x[0]}</b><small>${x[1]}</small></div>`).join('');$('[data-action]').onclick=act}
-function add(t,d){audit.unshift([t,`${new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})} · ${d}`])}
-function act(e){const a=e.currentTarget.dataset.action;if(a==='approve'){state='split';add('区部审批通过','等待后续模拟审批完成')}else if(a==='dispatch'){state='dispatch';add('钉钉审批完成并生成采购单','已按供应商拆为 2 张子单')}else if(a==='open'){$('#supplierLayer').classList.add('open');return}else if(a==='receive'){state='received';add('申请方完成签收','数量一致，无异常')}else if(a==='reassign'){supplier='远桥物资';state='dispatch';items[0][2]=supplier;items[1][2]=supplier;add('采购执行完成供应商改派','一次性链接已重新生成')}else if(a==='reset'){state='approval';supplier='晨川办公';items[0][2]=supplier;items[1][2]=supplier;audit=[['采购申请已提交','10:20 · 商业中心 / 星港二期店'],['已按首选供应商完成初分','10:21 · 2 家供应商 / 3 个商品']]}render()}
-$('#supplierClose').onclick=()=>$('#supplierLayer').classList.remove('open');$('#supplierShip').onclick=()=>{state='shipped';add('供应商确认发货',`模拟运单 ${$('#trackingNo').value}`);$('#supplierLayer').classList.remove('open');render()};$('#supplierReject').onclick=()=>{state='declined';add(`${supplier}拒绝接单`,'模拟原因：部分商品临时缺货');$('#supplierLayer').classList.remove('open');render()};render();
+const $ = function (selector) { return document.querySelector(selector); };
+
+const flowSteps = [
+  ['需求提报', '填写采购需求'],
+  ['钉钉初审', '业务与预算确认'],
+  ['智能拆单', '按首选供应商'],
+  ['下发审批', '确认执行订单'],
+  ['供应商执行', '接单并回传物流'],
+  ['完成', '到货签收']
+];
+
+const products = [
+  { id: 'mirror', icon: '▣', name: '全身试衣镜', spec: '160 × 50 cm · 黑色窄边', supplier: '晨川办公用品', alt: '远桥商业物资', price: 340, qty: 2 },
+  { id: 'tools', icon: '◇', name: '陈列工具套装', spec: '店铺陈列基础工具 · 12 件', supplier: '晨川办公用品', alt: '远桥商业物资', price: 105, qty: 3 },
+  { id: 'paper', icon: '▤', name: '标签打印纸', spec: '热敏标签 · 50 × 30 mm', supplier: '远桥商业物资', alt: '晨川办公用品', price: 30, qty: 6 },
+  { id: 'hanger', icon: '⌁', name: '防滑衣架', spec: '成人款 · 黑色 · 50 支/箱', supplier: '远桥商业物资', alt: '晨川办公用品', price: 96, qty: 0 }
+];
+
+const form = {
+  store: '上海星港二期店',
+  department: '商业中心',
+  date: '2026-08-21',
+  urgency: '普通',
+  purpose: '新店开业前补充陈列道具与试衣镜'
+};
+
+let state = 'draft';
+let events = [['演示已就绪', '现在 · 从发起采购开始']];
+let toastTimer;
+
+const stateIndex = {
+  draft: 0,
+  initialApproval: 1,
+  splitting: 2,
+  finalApproval: 3,
+  dispatched: 4,
+  shipped: 4,
+  completed: 5
+};
+
+function money(value) {
+  return '¥' + value.toLocaleString('zh-CN');
+}
+
+function totalAmount() {
+  return products.reduce(function (sum, item) { return sum + item.price * item.qty; }, 0);
+}
+
+function totalQty() {
+  return products.reduce(function (sum, item) { return sum + item.qty; }, 0);
+}
+
+function selectedProducts() {
+  return products.filter(function (item) { return item.qty > 0; });
+}
+
+function now() {
+  return new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+}
+
+function addEvent(title, detail) {
+  events.unshift([title, now() + ' · ' + detail]);
+  events = events.slice(0, 5);
+}
+
+function showToast(message) {
+  const el = $('#toast');
+  el.textContent = message;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2400);
+}
+
+function renderFlow() {
+  const active = stateIndex[state];
+  $('#flowTrack').innerHTML = flowSteps.map(function (step, index) {
+    const cls = index < active ? 'done' : index === active ? 'active' : '';
+    const mark = index < active ? '✓' : String(index + 1);
+    return '<div class="flow-step ' + cls + '"><i class="flow-dot">' + mark + '</i><span>' + step[0] + '</span><small>' + step[1] + '</small></div>';
+  }).join('');
+}
+
+function orderHeader(status, tone) {
+  return '<div class="order-hero"><div><span class="eyebrow">PURCHASE ORDER · BF-260816</span><h1>新店开业物资采购</h1><p>' + form.department + ' · ' + form.store + ' · 期望 ' + form.date.replace('2026-', '').replace('-', ' 月 ') + ' 日前到货</p></div><div class="order-amount"><span>采购金额</span><b>' + money(totalAmount()) + '</b><div class="status-pill ' + (tone || '') + '">' + status + '</div></div></div>';
+}
+
+function productRows() {
+  return products.map(function (item) {
+    return '<div class="product-row"><div class="product-info"><i class="product-icon">' + item.icon + '</i><div><b>' + item.name + '</b><small>' + item.spec + '</small></div></div><div class="product-meta">' + money(item.price) + '<small>参考单价</small></div><div class="qty"><button data-qty="minus" data-id="' + item.id + '" aria-label="减少">−</button><span>' + item.qty + '</span><button data-qty="plus" data-id="' + item.id + '" aria-label="增加">＋</button></div><div class="line-total">' + money(item.price * item.qty) + '</div></div>';
+  }).join('');
+}
+
+function compactItems() {
+  return '<div class="shipment">' + selectedProducts().map(function (item) {
+    return '<div class="shipment-row"><span>' + item.name + '</span><b>' + item.qty + ' 件 · ' + money(item.price * item.qty) + '</b><em>已加入申请</em></div>';
+  }).join('') + '</div>';
+}
+
+function supplierGroups(editable) {
+  const groups = {};
+  selectedProducts().forEach(function (item) {
+    if (!groups[item.supplier]) groups[item.supplier] = [];
+    groups[item.supplier].push(item);
+  });
+  return '<div class="supplier-groups">' + Object.keys(groups).map(function (name, groupIndex) {
+    const items = groups[name];
+    const amount = items.reduce(function (sum, item) { return sum + item.price * item.qty; }, 0);
+    return '<article class="supplier-card"><header><div><i>' + (groupIndex + 1) + '</i><div><b>' + name + '</b><small>自动生成子单 BF-260816-' + String.fromCharCode(65 + groupIndex) + '</small></div></div><span>匹配完成</span></header>' + items.map(function (item) {
+      const select = editable ? '<select data-supplier-for="' + item.id + '"><option' + (item.supplier === name ? ' selected' : '') + '>' + name + '</option><option>' + item.alt + '</option></select>' : '';
+      return '<div class="split-item"><div><b>' + item.name + '</b><small>' + item.spec + '</small>' + select + '</div><span>× ' + item.qty + '<small>' + money(item.price * item.qty) + '</small></span></div>';
+    }).join('') + '<div class="supplier-total"><span>' + items.length + ' 个品项 · ' + items.reduce(function (sum, item) { return sum + item.qty; }, 0) + ' 件</span><b>' + money(amount) + '</b></div></article>';
+  }).join('') + '</div>';
+}
+
+function renderDraft() {
+  return '<section class="panel panel-main"><div class="stage-title"><div><span class="eyebrow">NEW REQUEST</span><h1>发起一张采购单</h1><p>把门店需求和商品一次说清楚，提交后自动进入钉钉审批。</p></div><span class="status-pill">草稿</span></div><div class="form-grid"><label class="field"><span>采购部门</span><select data-field="department"><option>商业中心</option><option>人力资源中心</option></select></label><label class="field"><span>采购门店</span><select data-field="store"><option>上海星港二期店</option><option>杭州湖滨店</option></select></label><label class="field"><span>期望到货</span><input type="date" data-field="date" value="' + form.date + '"></label><label class="field"><span>紧急程度</span><select data-field="urgency"><option>普通</option><option>紧急</option></select></label><label class="field wide"><span>用途说明</span><textarea data-field="purpose">' + form.purpose + '</textarea></label></div><div class="catalog-head"><h2>选择采购商品</h2><span>数量变化会实时更新右侧采购篮</span></div><div class="product-list">' + productRows() + '</div></section>';
+}
+
+function renderInitialApproval() {
+  return '<section class="panel panel-main">' + orderHeader('等待钉钉初审', 'amber') + '<div class="approval-visual"><div class="approval-copy"><span>DINGTALK APPROVAL · 1 / 2</span><h2>采购申请已进入钉钉审批</h2><p>审批人在钉钉查看用途、门店、预算和商品摘要。Buyflow 等待回调，不重复建设审批界面。</p></div><div class="approval-orbit"><i>申</i><b></b><em>审</em></div></div>' + compactItems() + '</section>';
+}
+
+function renderSplitting() {
+  return '<section class="panel panel-main">' + orderHeader('自动拆单完成', 'green') + '<div class="split-banner"><b>✓ 初审通过后，系统已按“商品 → 首选供应商”自动拆成 ' + Object.keys(grouped()).length + ' 张子单</b><span>可在提交下发前调整归属</span></div>' + supplierGroups(true) + '</section>';
+}
+
+function grouped() {
+  return selectedProducts().reduce(function (out, item) {
+    out[item.supplier] = (out[item.supplier] || 0) + 1;
+    return out;
+  }, {});
+}
+
+function renderFinalApproval() {
+  return '<section class="panel panel-main">' + orderHeader('等待下发审批', 'amber') + '<div class="final-approval"><span>DINGTALK APPROVAL · 2 / 2</span><h2>拆单结果已提交最终审批</h2><p>这次审批确认的是“哪些供应商订单可以真正下发”。审批通过后，系统才生成一次性供应商链接。</p><div class="mini-orders">' + Object.keys(grouped()).map(function (name, index) { return '<div><div><b>子单 BF-260816-' + String.fromCharCode(65 + index) + '</b><small>' + name + ' · ' + grouped()[name] + ' 个品项</small></div><span>待批准</span></div>'; }).join('') + '</div></div></section>';
+}
+
+function renderDispatched() {
+  return '<section class="panel panel-main">' + orderHeader('已下发供应商', 'green') + '<div class="dispatch-success"><i>✓</i><h2>审批通过，供应商订单已生成</h2><p>两张子单拥有独立链接和状态，供应商无需注册即可查看并反馈。</p></div><div class="order-links"><button class="order-link" data-action="open-supplier"><div><b>晨川办公用品</b><span>BF-260816-A · ' + selectedProducts().filter(function (x) { return x.supplier === '晨川办公用品'; }).length + ' 个品项 · 待发货</span></div><i>↗</i></button><button class="order-link" data-action="open-supplier"><div><b>远桥商业物资</b><span>BF-260816-B · ' + selectedProducts().filter(function (x) { return x.supplier === '远桥商业物资'; }).length + ' 个品项 · 待发货</span></div><i>↗</i></button></div></section>';
+}
+
+function renderShipped() {
+  return '<section class="panel panel-main">' + orderHeader('供应商已发货', 'green') + '<div class="dispatch-success"><i>↗</i><h2>物流状态已自动回写</h2><p>供应商刚刚提交了运单，采购执行不需要再去群里追问。</p></div><div class="shipment"><div class="shipment-row"><span>晨川办公用品</span><b>顺丰速运 · ' + ($('#trackingNo') ? $('#trackingNo').value : 'SF208160086') + '</b><em>运输中</em></div><div class="shipment-row"><span>远桥商业物资</span><b>京东物流 · JD2608161208</b><em>运输中</em></div><div class="shipment-row"><span>收货门店</span><b>' + form.store + '</b><em>等待签收</em></div></div></section>';
+}
+
+function renderCompleted() {
+  return '<section class="panel panel-main">' + orderHeader('采购闭环完成', 'green') + '<div class="complete-card"><i>✓</i><h2>从需求到签收，状态完整留痕</h2><p>采购人、审批人和供应商只处理自己需要的动作，系统把状态自动串联起来。</p><div class="complete-metrics"><div><strong>2</strong><span>供应商子单</span></div><div><strong>' + totalQty() + '</strong><span>采购件数</span></div><div><strong>1 条</strong><span>连续流程记录</span></div></div></div></section>';
+}
+
+function sideConfig() {
+  const configs = {
+    draft: ['采购篮', '提交采购申请', 'submit-request', '提交后进入钉钉初审', '选择了 ' + selectedProducts().length + ' 个商品'],
+    initialApproval: ['当前动作', '模拟钉钉初审通过', 'approve-initial', '模拟外部审批回调，随后自动拆单', '等待审批回调'],
+    splitting: ['当前动作', '提交下发审批', 'submit-final', '确认拆单结果后进入第二次钉钉审批', '已生成 ' + Object.keys(grouped()).length + ' 张子单'],
+    finalApproval: ['当前动作', '模拟最终审批通过', 'approve-final', '通过后才真正生成供应商订单', '等待下发审批'],
+    dispatched: ['当前动作', '打开供应商端', 'open-supplier', '体验供应商如何查看订单并回传物流', '2 张订单待供应商处理'],
+    shipped: ['当前动作', '确认门店签收', 'receive', '签收后完成整条采购流程', '物流运输中'],
+    completed: ['演示完成', '重新走一遍流程', 'reset', '所有数据均为虚构演示数据', '流程已闭环']
+  };
+  return configs[state];
+}
+
+function renderSide() {
+  const c = sideConfig();
+  return '<aside class="panel panel-side"><div class="summary-top"><span class="eyebrow">' + c[0].toUpperCase() + '</span><h3>' + c[4] + '</h3><p>BF-260816 · ' + form.store + '</p></div><div class="summary-lines"><div><span>品项 / 件数</span><b>' + selectedProducts().length + ' / ' + totalQty() + '</b></div><div><span>采购金额</span><b>' + money(totalAmount()) + '</b></div><div><span>当前阶段</span><b>' + flowSteps[stateIndex[state]][0] + '</b></div></div><div class="summary-total"><span>本单合计</span><strong>' + money(totalAmount()) + '</strong></div><button class="primary" data-action="' + c[2] + '">' + c[1] + '</button><p class="action-help">' + c[3] + '</p><div class="event-list"><span>RECENT ACTIVITY</span>' + events.slice(0, 3).map(function (event) { return '<div><b>' + event[0] + '</b><small>' + event[1] + '</small></div>'; }).join('') + '</div></aside>';
+}
+
+function render() {
+  renderFlow();
+  const renderers = {
+    draft: renderDraft,
+    initialApproval: renderInitialApproval,
+    splitting: renderSplitting,
+    finalApproval: renderFinalApproval,
+    dispatched: renderDispatched,
+    shipped: renderShipped,
+    completed: renderCompleted
+  };
+  const mount = $('#stageMount');
+  mount.classList.remove('stage-enter');
+  mount.innerHTML = renderers[state]() + renderSide();
+  void mount.offsetWidth;
+  mount.classList.add('stage-enter');
+  $('#crumb').textContent = state === 'draft' ? '发起采购' : '采购单 / BF-260816';
+  document.querySelectorAll('[data-nav]').forEach(function (button) {
+    const nav = button.dataset.nav;
+    button.classList.toggle('active', nav === 'draft' && state === 'draft' || nav === 'order' && state !== 'draft');
+  });
+}
+
+function resetDemo() {
+  state = 'draft';
+  products.forEach(function (item, index) {
+    item.qty = [2, 3, 6, 0][index];
+    item.supplier = index < 2 ? '晨川办公用品' : '远桥商业物资';
+  });
+  events = [['演示已重置', now() + ' · 从发起采购开始']];
+  render();
+  showToast('已回到发起采购');
+}
+
+document.addEventListener('click', function (event) {
+  const qtyButton = event.target.closest('[data-qty]');
+  if (qtyButton) {
+    const item = products.find(function (product) { return product.id === qtyButton.dataset.id; });
+    item.qty = Math.max(0, item.qty + (qtyButton.dataset.qty === 'plus' ? 1 : -1));
+    render();
+    return;
+  }
+
+  const navButton = event.target.closest('[data-nav]');
+  if (navButton) {
+    const nav = navButton.dataset.nav;
+    if (nav === 'draft') { state = 'draft'; render(); }
+    else if (nav === 'order') {
+      if (state === 'draft') showToast('先提交采购申请，系统会生成采购单');
+      else render();
+    } else if (nav === 'supplier') {
+      if (state === 'dispatched' || state === 'shipped') openSupplier();
+      else showToast('最终审批通过后，供应商协同入口才会开启');
+    } else showToast('本次演示聚焦采购主流程');
+    return;
+  }
+
+  const action = event.target.closest('[data-action]');
+  if (!action) return;
+  const name = action.dataset.action;
+  if (name === 'submit-request') {
+    if (!form.purpose.trim() || !selectedProducts().length) {
+      showToast('请填写用途并至少选择一个商品');
+      return;
+    }
+    state = 'initialApproval';
+    addEvent('采购申请已提交', '已推送钉钉初审');
+    showToast('采购单 BF-260816 已生成');
+    render();
+  } else if (name === 'approve-initial') {
+    state = 'splitting';
+    addEvent('钉钉初审通过', '系统自动完成供应商拆单');
+    showToast('审批回调成功，已自动拆成 2 张子单');
+    render();
+  } else if (name === 'submit-final') {
+    state = 'finalApproval';
+    addEvent('拆单结果已复核', '提交钉钉下发审批');
+    showToast('已提交最终审批');
+    render();
+  } else if (name === 'approve-final') {
+    state = 'dispatched';
+    addEvent('最终审批通过', '供应商订单与安全链接已生成');
+    showToast('2 张供应商订单已下发');
+    render();
+  } else if (name === 'open-supplier') {
+    openSupplier();
+  } else if (name === 'close-supplier') {
+    closeSupplier();
+  } else if (name === 'supplier-ship') {
+    state = 'shipped';
+    addEvent('晨川办公确认发货', '物流信息已自动回写');
+    closeSupplier();
+    showToast('供应商已发货，物流状态已同步');
+    render();
+  } else if (name === 'receive') {
+    state = 'completed';
+    addEvent('门店完成签收', '采购流程闭环');
+    showToast('签收完成');
+    render();
+  } else if (name === 'reset') {
+    resetDemo();
+  }
+});
+
+document.addEventListener('input', function (event) {
+  if (event.target.dataset.field) form[event.target.dataset.field] = event.target.value;
+});
+
+document.addEventListener('change', function (event) {
+  if (event.target.dataset.field) form[event.target.dataset.field] = event.target.value;
+  if (event.target.dataset.supplierFor) {
+    const item = products.find(function (product) { return product.id === event.target.dataset.supplierFor; });
+    if (item) {
+      item.alt = item.supplier;
+      item.supplier = event.target.value;
+      addEvent('已调整供应商归属', item.name + ' → ' + item.supplier);
+      showToast('供应商归属已更新，金额重新汇总');
+      render();
+    }
+  }
+});
+
+function openSupplier() {
+  $('#supplierItems').innerHTML = selectedProducts().filter(function (item) { return item.supplier === '晨川办公用品'; }).map(function (item) {
+    return '<div class="phone-item"><b>' + item.name + '</b><span>× ' + item.qty + '</span></div>';
+  }).join('');
+  $('#supplierLayer').classList.add('open');
+  $('#supplierLayer').setAttribute('aria-hidden', 'false');
+}
+
+function closeSupplier() {
+  $('#supplierLayer').classList.remove('open');
+  $('#supplierLayer').setAttribute('aria-hidden', 'true');
+}
+
+render();

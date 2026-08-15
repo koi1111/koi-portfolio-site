@@ -18,8 +18,8 @@ for (const [name, cssFile, jsFile] of demos) {
     readFile(join(root, 'demos', jsFile), 'utf8'),
   ]);
   const bundled = html
-    .replace(`<link rel="stylesheet" href="${cssFile}">`, `<style>${css}</style>`)
-    .replace(`<script src="${jsFile}"></script>`, `<script>${js.replaceAll('</script>', '<\\/script>')}</script>`);
+    .replace(`<link rel="stylesheet" href="${cssFile}">`, () => `<style>${css}</style>`)
+    .replace(`<script src="${jsFile}"></script>`, () => `<script>${js.replaceAll('</script>', '<\\/script>')}</script>`);
   await writeFile(join(root, 'demos', `${name}-bundle.html`), bundled);
   console.log(`bundled ${name}`);
 }

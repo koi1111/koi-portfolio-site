@@ -1,1 +1,61 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>行政采购协同平台 · Buyflow</title><link rel="stylesheet" href="buyflow-demo.css"></head><body><div class="buy-shell"><aside><div class="buy-logo"><i>◇</i><span><b>行政采购</b><small>buyflow v0.1.0</small></span></div><nav><a>▦　概览</a><a>ⓘ　操作指南</a><small>🛒 日常采购</small><a>⊕　发起采购</a><a class="active">🛒　采购单</a><a>▱　供应商管理</a><a>⌘　商品库</a><small>🧑 员工资产　<em>二期</em></small><a>♙　入职配置</a><a>♙　离职回收</a><a>⚙　调岗变更</a><a>▣　资产台账</a><small>📦 库存 / 调拨</small><a>▭　库存台账</a><a>⇄　店间调拨</a><a>⌖　门店信息</a><a>⌁　工程工单</a><a>☑　耗材盘点</a></nav><div class="buy-user"><i>演</i><span><b>演示用户</b><small>采购执行</small></span></div></aside><main><header><span>行政采购协同平台　/　<b>采购单 / #P-1002</b></span><div>🔔 <em>3</em>　<span class="avatar">演</span> 演示用户　↗</div></header><section class="buy-content"><button class="back">← 返回采购单列表</button><div class="purchase-title"><h1>采购单 #P-1002</h1><span class="pill yellow" id="buyStatusTop">分拆处理中</span><span class="pill purple">钉钉节点 · 待区部审批</span><span class="pill">◷ 普通</span></div><div class="purpose">▢　<b>用途说明：</b>新店开业前补陈列道具＋试衣镜</div><div class="budget"><b>商业中心 本月预算占用：¥1,175 / ¥60,000 · 还剩 98%</b><span>数据 mock · 真实上线接财务</span><i></i></div><div class="buy-steps" id="buySteps"></div><section class="approval-card"><h3>♧　钉钉审批链 · 4 级　<span>当前等 区部</span></h3><div class="approval-chain"><b class="active">1　区部</b><i>→</i><b>2　人事</b><i>→</i><b>3　财务</b><i>→</i><b>4　营总</b></div><p id="approvalHint">💡 区部现在在钉钉里 · 通过后系统自动推进下一级</p></section><div class="buy-grid"><section><article class="card info-card"><h3>▧　单据信息</h3><dl><dt>发起人</dt><dd>陈屿</dd><dt>部门</dt><dd>商业中心</dd><dt>门店</dt><dd>星港二期店</dd><dt>收货地址</dt><dd>上海市浦东新区星港路 88 号 B1</dd><dt>期望到货</dt><dd>2026-08-21</dd><dt>创建时间</dt><dd>2026-08-14 10:20</dd><dt>总金额</dt><dd class="money">¥1,175.00</dd></dl></article><article class="card"><h3>商品与供应商归属</h3><div class="item-table" id="buyItems"></div></article></section><section><article class="card next-card"><h3>ϟ　下一步</h3><div class="next-note" id="nextNote">系统已按“首选供应商”自动初分。钉钉审批完成后才真正下发。</div><div class="buy-actions" id="buyActions"></div></article><article class="card audit-card"><h3>连续状态记录</h3><div id="buyAudit"></div></article></section></div></section></main></div><div class="supplier-layer" id="supplierLayer"><div class="phone"><header><button id="supplierClose">×</button><b>📦 行政采购需求</b><small>来自「演示公司 · 商业中心」</small></header><div class="phone-scroll"><section><dl><dt>供应商</dt><dd id="supplierName">晨川办公</dd><dt>单据号</dt><dd>#P-1002-A</dd><dt>期望到货</dt><dd>2026-08-21</dd><dt>发往</dt><dd class="red">2 家门店</dd></dl></section><div class="warning">⚠️ 本单涉及 2 个收货门店，每个门店需分别填写快递信息。</div><section class="store-order"><h3>📍 门店 1 / 2 · 星港二期店</h3><p>地址：上海市浦东新区星港路 88 号 B1</p><div><b>🪞 全身试衣镜</b><span>×2</span></div><div><b>🧰 陈列工具套装</b><span>×3</span></div><label>快递公司<select><option>顺丰速运</option><option>京东物流</option></select></label><label>物流单号<input id="trackingNo" value="SF-MOCK-20818"></label></section><button class="ship" id="supplierShip">确认发货</button><button class="reject" id="supplierReject">无法接单 / 缺货</button><p class="token-note">本链接 7 天有效 · 一次性使用 · 提交后不可撤销</p></div></div></div><script src="buyflow-demo.js"></script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>行政采购协同平台 · Buyflow</title>
+  <link rel="stylesheet" href="buyflow-demo.css?v=21">
+</head>
+<body>
+  <div class="buy-shell">
+    <aside class="sidebar">
+      <div class="brand"><i>◇</i><span><b>行政采购</b><small>BUYFLOW · DEMO</small></span></div>
+      <nav aria-label="演示导航">
+        <button data-nav="workspace"><i>⌂</i><span>工作台</span></button>
+        <button data-nav="draft" class="active"><i>＋</i><span>发起采购</span></button>
+        <button data-nav="order"><i>▤</i><span>采购单</span><em id="orderBadge">1</em></button>
+        <button data-nav="supplier"><i>◇</i><span>供应商协同</span></button>
+      </nav>
+      <div class="sidebar-note"><span>DEMO MODE</span><p>虚构数据 · 可完整操作</p></div>
+      <div class="user"><i>瑾</i><span><b>王瑾俪</b><small>产品演示</small></span></div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div><span>行政采购协同平台</span><i>/</i><b id="crumb">发起采购</b></div>
+        <div class="top-actions"><span class="live"><i></i>流程演示中</span><span class="avatar">瑾</span></div>
+      </header>
+
+      <div class="page">
+        <section class="flow-card" aria-label="采购流程">
+          <div class="flow-head"><div><span>PROCESS</span><strong>一张采购单如何运转</strong></div><button data-action="reset">重新演示 ↻</button></div>
+          <div class="flow-track" id="flowTrack"></div>
+        </section>
+
+        <section class="stage" id="stageMount" aria-live="polite"></section>
+      </div>
+    </main>
+  </div>
+
+  <div class="supplier-layer" id="supplierLayer" aria-hidden="true">
+    <div class="supplier-dialog">
+      <div class="phone">
+        <header><button data-action="close-supplier" aria-label="关闭">×</button><span>供应商订单</span><b>晨川办公用品</b><small>一次性安全链接 · 无需注册</small></header>
+        <div class="phone-body">
+          <div class="phone-status"><i>待发货</i><span>采购子单 BF-260816-A</span></div>
+          <section class="delivery-card"><span>送达门店</span><b>上海星港二期店</b><p>浦东新区星港路 88 号 B1 · 期望 08 月 21 日前送达</p></section>
+          <section class="phone-items" id="supplierItems"></section>
+          <label>物流公司<select id="carrier"><option>顺丰速运</option><option>京东物流</option><option>德邦快递</option></select></label>
+          <label>物流单号<input id="trackingNo" value="SF208160086"></label>
+          <button class="phone-primary" data-action="supplier-ship">确认发货</button>
+          <p class="phone-tip">提交后，采购方会立即收到物流状态更新。</p>
+        </div>
+      </div>
+      <div class="supplier-explain"><span>SUPPLIER SIDE</span><h2>供应商不需要学习<br>另一套复杂系统。</h2><p>一个安全链接，只呈现当前订单、收货地址与发货动作。供应商提交后，采购单状态自动回写。</p></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="buyflow-demo.js?v=21"></script>
+</body>
+</html>
