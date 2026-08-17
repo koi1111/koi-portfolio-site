@@ -99,3 +99,27 @@ pre{margin:0;padding:14px;height:330px;overflow:auto;background:#f7f9fc;color:#5
 :where(h1,h2,h3,.phase b,.metric b,.algo-flow b){text-wrap:balance;word-break:auto-phrase;overflow-wrap:normal}
 :where(button,.pill,.status,.season-strip span,.ctc-side nav button,th){white-space:nowrap;word-break:keep-all}
 .table-wrap{overflow-x:auto}.table-wrap table{min-width:720px}
+
+/* mobile responsive pass */
+@media(max-width:560px){
+html,body,.ctc-shell{max-width:100%;overflow-x:hidden}
+.ctc-top{height:auto;min-height:54px;padding:10px 13px;gap:8px;flex-wrap:wrap}
+.ctc-content{padding:10px}
+.season-strip{overflow-x:auto;flex-wrap:nowrap;overscroll-behavior-inline:contain;scrollbar-width:none}
+.season-strip::-webkit-scrollbar{display:none}
+.season-strip>b,.season-strip span,.season-strip em{flex:0 0 auto}
+.season-strip span:nth-of-type(n+3){display:inline-block}
+.params{display:grid;grid-template-columns:1fr 1fr;padding:12px;align-items:end}
+.params label,.params select,.params input,.params .primary{width:100%;min-width:0}
+.params .primary{grid-column:1/-1;min-height:42px}
+.phases{display:flex;overflow-x:auto;gap:10px;scroll-snap-type:x mandatory;overscroll-behavior-inline:contain;scrollbar-width:none}
+.phases::-webkit-scrollbar{display:none}
+.phase{flex:0 0 78%;scroll-snap-align:start}
+.run-grid{gap:10px}
+.panel-head,.run-head{align-items:flex-start;gap:8px;flex-direction:column}
+.metric-grid{grid-template-columns:1fr 1fr}
+.algo-flow{grid-template-columns:1fr}
+.risk-list div{grid-template-columns:70px 82px minmax(90px,1fr);gap:7px}
+pre{height:260px}
+.table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+}

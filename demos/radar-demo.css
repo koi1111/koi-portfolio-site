@@ -108,3 +108,24 @@ pre{background:#171816;color:#d9dbd5;border-radius:10px;padding:14px;font:11px/1
 :where(h1,h2,h3,.radar-kpis b,.tree b,.drawer b){text-wrap:balance;word-break:auto-phrase;overflow-wrap:normal}
 :where(button,.pill,.badge,.radar-shell>aside a,.rrow>span:first-child){white-space:nowrap;word-break:keep-all}
 .rank-list{overflow-x:auto}.rrow{min-width:760px}
+
+/* mobile responsive pass */
+@media(max-width:600px){
+html,body,.radar-shell{max-width:100%;overflow-x:hidden}
+.radar-view{padding:10px}
+.section-head{align-items:flex-start;gap:10px;flex-direction:column}
+.section-head>span,.section-head label{width:100%}
+.section-head input{max-width:100%}
+.radar-kpis{grid-template-columns:1fr 1fr;gap:9px}
+.radar-kpis article{padding:13px}
+.radar-kpis b{font-size:23px}
+.treemap{height:430px}
+.price-bands,.spu-grid{grid-template-columns:1fr 1fr}
+.rank-list,.timeline{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.timeline-row{min-width:560px}
+.config{align-items:stretch;flex-direction:column}
+.config label,.config input,.config button{width:100%}
+.config button{min-height:42px}
+.drawer{width:100%;padding:18px}
+.drawer-grid{grid-template-columns:1fr}
+}

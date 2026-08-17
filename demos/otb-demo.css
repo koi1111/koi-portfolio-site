@@ -82,3 +82,25 @@ main{padding:14px}
 :where(h1,h2,h3,.kpi b,.light b,.stock-cell b){text-wrap:balance;word-break:auto-phrase;overflow-wrap:normal}
 :where(button,.pill,.online,.otb-tabs button,.filter-shell label,.brand-table .head){white-space:nowrap;word-break:keep-all}
 .brand-table{min-width:680px}.tab-view:has(.brand-table){overflow-x:auto}
+
+/* mobile responsive pass */
+@media(max-width:550px){
+html,body{max-width:100%;overflow-x:hidden}
+.otb-top{height:auto;min-height:50px;padding:9px 12px;gap:8px}
+.filter-shell{padding:9px 12px;gap:8px;overflow:hidden}
+.filter-shell>span{width:100%}
+.filters{width:100%;overflow-x:auto;flex-wrap:nowrap;overscroll-behavior-inline:contain;scrollbar-width:none}
+.filters::-webkit-scrollbar,.otb-tabs::-webkit-scrollbar{display:none}
+.filters label{flex:0 0 145px}
+.otb-tabs{overscroll-behavior-inline:contain;scrollbar-width:none}
+.otb-tabs button:last-child{margin-left:0}
+main{padding:10px}
+.card{padding:15px;border-radius:8px;max-width:100%;overflow-x:auto}
+.kpis{grid-template-columns:1fr 1fr;gap:9px}
+.kpi{min-height:105px;padding:12px}
+.kpi b{font-size:21px}
+.matrix{max-width:100%;overflow-x:auto}
+.lights,.stock-grid{grid-template-columns:1fr 1fr}
+.chart{min-width:500px}
+.tab-view{max-width:100%;overflow-x:auto}
+}
