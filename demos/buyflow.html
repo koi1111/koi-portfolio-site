@@ -4,58 +4,46 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>行政采购协同平台 · Buyflow</title>
-  <link rel="stylesheet" href="buyflow-demo.css?v=22">
+  <link rel="stylesheet" href="buyflow-demo.css">
 </head>
 <body>
   <div class="buy-shell">
     <aside class="sidebar">
-      <div class="brand"><i>◇</i><span><b>行政采购</b><small>BUYFLOW · DEMO</small></span></div>
+      <div class="brand"><i>BF</i><span><b>行政采购</b><small>BUYFLOW</small></span></div>
       <nav aria-label="演示导航">
-        <button data-nav="workspace"><i>⌂</i><span>工作台</span></button>
-        <button data-nav="draft" class="active"><i>＋</i><span>发起采购</span></button>
-        <button data-nav="order"><i>▤</i><span>采购单</span><em id="orderBadge">1</em></button>
-        <button data-nav="supplier"><i>◇</i><span>供应商协同</span></button>
+        <button data-nav="draft" class="active" aria-label="统一采购单"><i>＋</i><span>统一采购单</span></button>
+        <button data-nav="analysis" aria-label="智能拆单"><i>⌘</i><span>智能拆单</span><em id="analysisBadge">0</em></button>
+        <button data-nav="orders" aria-label="履约订单"><i>▤</i><span>履约订单</span><em>4</em></button>
+        <button data-nav="logs" aria-label="运行记录"><i>≡</i><span>运行记录</span></button>
       </nav>
-      <div class="sidebar-note"><span>AI WORKFLOW · DEMO</span><p>AI 提议 · 规则校验 · 人工批准</p></div>
-      <div class="user"><i>瑾</i><span><b>王瑾俪</b><small>产品演示</small></span></div>
+      <div class="sidebar-note"><b>演示说明</b><p>虚构商品与运行数据，不连接真实模型或采购系统。</p></div>
+      <div class="user"><i>瑾</i><span><b>王瑾俪</b><small>采购协同演示</small></span></div>
     </aside>
 
     <main>
       <header class="topbar">
-        <div><span>行政采购协同平台</span><i>/</i><b id="crumb">发起采购</b></div>
-        <div class="top-actions"><span class="ai-live">AI RUN · SIMULATED</span><span class="live"><i></i>流程演示中</span><span class="avatar">瑾</span></div>
+        <div><span>行政采购协同平台</span><i>/</i><b id="crumb">统一采购单</b></div>
+        <div class="top-actions"><span class="demo-state">模拟环境</span><span class="avatar">瑾</span></div>
       </header>
 
       <div class="page">
         <section class="flow-card" aria-label="采购流程">
-          <div class="flow-head"><div><span>PROCESS</span><strong>一张采购单如何运转</strong></div><button data-action="reset">重新演示 ↻</button></div>
+          <div class="flow-head"><strong>统一提单到履约</strong><button data-action="reset">重新演示</button></div>
           <div class="flow-track" id="flowTrack"></div>
         </section>
-
         <section class="stage" id="stageMount" aria-live="polite"></section>
       </div>
     </main>
   </div>
 
-  <div class="supplier-layer" id="supplierLayer" aria-hidden="true">
-    <div class="supplier-dialog">
-      <div class="phone">
-        <header><button data-action="close-supplier" aria-label="关闭">×</button><span>供应商订单</span><b>晨川办公用品</b><small>一次性安全链接 · 无需注册</small></header>
-        <div class="phone-body">
-          <div class="phone-status"><i>待发货</i><span>采购子单 BF-260816-A</span></div>
-          <section class="delivery-card"><span>送达门店</span><b>上海星港二期店</b><p>浦东新区星港路 88 号 B1 · 期望 08 月 21 日前送达</p></section>
-          <section class="phone-items" id="supplierItems"></section>
-          <label>物流公司<select id="carrier"><option>顺丰速运</option><option>京东物流</option><option>德邦快递</option></select></label>
-          <label>物流单号<input id="trackingNo" value="SF208160086"></label>
-          <button class="phone-primary" data-action="supplier-ship">确认发货</button>
-          <p class="phone-tip">提交后，采购方会立即收到物流状态更新。</p>
-        </div>
-      </div>
-      <div class="supplier-explain"><span>SUPPLIER SIDE</span><h2>供应商不需要学习<br>另一套复杂系统。</h2><p>一个安全链接，只呈现当前订单、收货地址与发货动作。供应商提交后，采购单状态自动回写。</p></div>
-    </div>
+  <div class="drawer-layer" id="logLayer" aria-hidden="true">
+    <section class="run-drawer" role="dialog" aria-modal="true" aria-labelledby="runDrawerTitle">
+      <header><div><span>RUN DETAIL</span><h2 id="runDrawerTitle">运行详情</h2></div><button data-action="close-log" aria-label="关闭运行详情">×</button></header>
+      <div id="runDetail"></div>
+    </section>
   </div>
 
-  <div class="toast" id="toast"></div>
-  <script src="buyflow-demo.js?v=22"></script>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="buyflow-demo.js"></script>
 </body>
 </html>
