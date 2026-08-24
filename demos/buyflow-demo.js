@@ -1,11 +1,12 @@
 const $ = function (selector) { return document.querySelector(selector); };
 
 const flowSteps = [
-  ['需求提报', '填写采购需求'],
-  ['钉钉初审', '业务与预算确认'],
-  ['智能拆单', '按首选供应商'],
-  ['下发审批', '确认执行订单'],
-  ['供应商执行', '接单并回传物流'],
+  ['需求提报', '文字与商品'],
+  ['AI 整理', '提取与补缺'],
+  ['业务初审', '用途与预算'],
+  ['AI 拆单', '建议与校验'],
+  ['执行审批', '人工确认'],
+  ['供应商', '沟通与物流'],
   ['完成', '到货签收']
 ];
 
@@ -30,12 +31,14 @@ let toastTimer;
 
 const stateIndex = {
   draft: 0,
-  initialApproval: 1,
-  splitting: 2,
-  finalApproval: 3,
-  dispatched: 4,
-  shipped: 4,
-  completed: 5
+  aiReview: 1,
+  initialApproval: 2,
+  splitting: 3,
+  finalApproval: 4,
+  messageReview: 5,
+  dispatched: 5,
+  shipped: 5,
+  completed: 6
 };
 
 function money(value) {
@@ -105,7 +108,7 @@ function supplierGroups(editable) {
   return '<div class="supplier-groups">' + Object.keys(groups).map(function (name, groupIndex) {
     const items = groups[name];
     const amount = items.reduce(function (sum, item) { return sum + item.price * item.qty; }, 0);
-    return '<article class="supplier-card"><header><div><i>' + (groupIndex + 1) + '</i><div><b>' + name + '</b><small>自动生成子单 BF-260816-' + String.fromCharCode(65 + groupIndex) + '</small></div></div><span>匹配完成</span></header>' + items.map(function (item) {
+    return '<article class="supplier-card"><header><div><i>' + (groupIndex + 1) + '</i><div><b>' + name + '</b><small>建议子单 BF-260816-' + String.fromCharCode(65 + groupIndex) + '</small></div></div><span>规则通过</span></header>' + items.map(function (item) {
       const select = editable ? '<select data-supplier-for="' + item.id + '"><option' + (item.supplier === name ? ' selected' : '') + '>' + name + '</option><option>' + item.alt + '</option></select>' : '';
       return '<div class="split-item"><div><b>' + item.name + '</b><small>' + item.spec + '</small>' + select + '</div><span>× ' + item.qty + '<small>' + money(item.price * item.qty) + '</small></span></div>';
     }).join('') + '<div class="supplier-total"><span>' + items.length + ' 个品项 · ' + items.reduce(function (sum, item) { return sum + item.qty; }, 0) + ' 件</span><b>' + money(amount) + '</b></div></article>';
@@ -113,7 +116,17 @@ function supplierGroups(editable) {
 }
 
 function renderDraft() {
-  return '<section class="panel panel-main"><div class="stage-title"><div><span class="eyebrow">NEW REQUEST</span><h1>发起一张采购单</h1><p>把门店需求和商品一次说清楚，提交后自动进入钉钉审批。</p></div><span class="status-pill">草稿</span></div><div class="form-grid"><label class="field"><span>采购部门</span><select data-field="department"><option>商业中心</option><option>人力资源中心</option></select></label><label class="field"><span>采购门店</span><select data-field="store"><option>上海星港二期店</option><option>杭州湖滨店</option></select></label><label class="field"><span>期望到货</span><input type="date" data-field="date" value="' + form.date + '"></label><label class="field"><span>紧急程度</span><select data-field="urgency"><option>普通</option><option>紧急</option></select></label><label class="field wide"><span>用途说明</span><textarea data-field="purpose">' + form.purpose + '</textarea></label></div><div class="catalog-head"><h2>选择采购商品</h2><span>数量变化会实时更新右侧采购篮</span></div><div class="product-list">' + productRows() + '</div></section>';
+  return '<section class="panel panel-main"><div class="stage-title"><div><span class="eyebrow">NEW REQUEST · MIXED INPUT</span><h1>把采购需求交给系统整理</h1><p>提交用途说明与商品后，AI 先提取交期、场景和品项，再由你校对，不能直接进入审批。</p></div><span class="status-pill">草稿</span></div><div class="input-disclosure"><i>AI</i><div><b>这一环节会使用 AI</b><span>只读取当前采购单与商品选择；输出是可编辑建议，不会自动审批或联系供应商。</span></div></div><div class="form-grid"><label class="field"><span>采购部门</span><select data-field="department"><option>商业中心</option><option>人力资源中心</option></select></label><label class="field"><span>采购门店</span><select data-field="store"><option>上海星港二期店</option><option>杭州湖滨店</option></select></label><label class="field"><span>期望到货</span><input type="date" data-field="date" value="' + form.date + '"></label><label class="field"><span>紧急程度</span><select data-field="urgency"><option>普通</option><option>紧急</option></select></label><label class="field wide"><span>原始需求说明 · 可使用自然语言</span><textarea data-field="purpose">' + form.purpose + '</textarea></label></div><div class="catalog-head"><h2>随需求提交的商品</h2><span>模拟附件已解析为候选商品，可继续调整数量</span></div><div class="product-list">' + productRows() + '</div></section>';
+}
+
+function renderAIReview() {
+  const fields = [
+    ['采购场景', '新店开业物资', 'High', '来源：用途说明'],
+    ['收货门店', form.store, 'High', '来源：表单字段'],
+    ['期望到货', form.date.replace('2026-', '').replace('-', ' 月 ') + ' 日前', 'High', '来源：日期字段'],
+    ['紧急程度', form.urgency, 'Medium', '依据：交期与开业场景']
+  ];
+  return '<section class="panel panel-main"><div class="stage-title"><div><span class="eyebrow">AI EXTRACTION · RUN AI-BF-0821-01</span><h1>AI 已整理采购需求，等待人工校对</h1><p>黄色字段来自推断；高置信字段也可以修改。任何关键字段缺失都会在这里停止流转。</p></div><span class="status-pill amber">待确认</span></div><div class="ai-review-grid">' + fields.map(function(field){return '<article class="ai-field ' + field[2].toLowerCase() + '"><span>' + field[0] + '<em>' + field[2] + '</em></span><b>' + field[1] + '</b><small>' + field[3] + '</small></article>';}).join('') + '</div><div class="ai-review-body"><div><span class="eyebrow">EXTRACTED ITEMS</span><h2>' + selectedProducts().length + ' 个品项 · ' + totalQty() + ' 件</h2><p>商品名称、规格、数量和参考单价均来自本次模拟附件与商品目录，不由模型生成。</p></div><div class="validation-list"><div class="pass"><i>✓</i><span><b>必填字段完整</b><small>部门、门店、用途和交期均存在</small></span></div><div class="pass"><i>✓</i><span><b>商品信息可追溯</b><small>每个品项均绑定目录记录</small></span></div><div class="warn"><i>!</i><span><b>紧急程度为推断</b><small>请人工确认是否需要加急</small></span></div></div></div>' + compactItems() + '</section>';
 }
 
 function renderInitialApproval() {
@@ -121,7 +134,7 @@ function renderInitialApproval() {
 }
 
 function renderSplitting() {
-  return '<section class="panel panel-main">' + orderHeader('自动拆单完成', 'green') + '<div class="split-banner"><b>✓ 初审通过后，系统已按“商品 → 首选供应商”自动拆成 ' + Object.keys(grouped()).length + ' 张子单</b><span>可在提交下发前调整归属</span></div>' + supplierGroups(true) + '</section>';
+  return '<section class="panel panel-main">' + orderHeader('AI 拆单建议待复核', 'amber') + '<div class="split-banner ai"><div><b>AI 基于品类覆盖、历史合作与交期生成 ' + Object.keys(grouped()).length + ' 张子单建议</b><span>建议不是订单；采购人员可以调整供应商，规则会重新校验。</span></div><em>Medium confidence</em></div><div class="rule-checks"><span>RULE VALIDATION</span><div><b>✓ 供应商状态有效</b><b>✓ 预算未超限</b><b>✓ MOQ 已满足</b><b>✓ 交期覆盖</b></div></div>' + supplierGroups(true) + '<div class="split-explain"><b>为什么这样拆？</b><p>试衣镜与陈列工具归入晨川：目录覆盖完整、历史交期稳定；标签打印纸归入远桥：该品类为其主供。价格与供应商最终选择仍由采购人员确认。</p></div></section>';
 }
 
 function grouped() {
@@ -133,6 +146,11 @@ function grouped() {
 
 function renderFinalApproval() {
   return '<section class="panel panel-main">' + orderHeader('等待下发审批', 'amber') + '<div class="final-approval"><span>DINGTALK APPROVAL · 2 / 2</span><h2>拆单结果已提交最终审批</h2><p>这次审批确认的是“哪些供应商订单可以真正下发”。审批通过后，系统才生成一次性供应商链接。</p><div class="mini-orders">' + Object.keys(grouped()).map(function (name, index) { return '<div><div><b>子单 BF-260816-' + String.fromCharCode(65 + index) + '</b><small>' + name + ' · ' + grouped()[name] + ' 个品项</small></div><span>待批准</span></div>'; }).join('') + '</div></div></section>';
+}
+
+function renderMessageReview() {
+  const recipients = Object.keys(grouped()).join('、');
+  return '<section class="panel panel-main">' + orderHeader('对外联系待人工确认', 'amber') + '<div class="message-review"><div class="message-head"><div><span class="eyebrow">AI COMMUNICATION DRAFT</span><h2>审批已通过，先检查供应商沟通草稿</h2><p>收件人和订单金额来自已批准子单；AI 只负责把结构化信息整理成沟通文本。</p></div><span class="human-gate">HUMAN GATE</span></div><div class="recipient-row"><span>拟联系供应商</span><b>' + recipients + '</b><em>2 位</em></div><label>可编辑沟通草稿<textarea id="supplierDraft">您好，采购单 BF-260816 已完成内部审批。本次包含新店开业陈列物资，期望 08 月 21 日前送达上海星港二期店。请通过安全链接确认品项、交期并回传物流信息；如价格或交期存在差异，请勿直接发货，先在订单中反馈。</textarea></label><div class="outbound-check"><i>✓</i><span><b>外部联系默认关闭</b><small>点击右侧确认后仅生成模拟供应商链接，不发送真实消息。</small></span></div></div></section>';
 }
 
 function renderDispatched() {
@@ -149,10 +167,12 @@ function renderCompleted() {
 
 function sideConfig() {
   const configs = {
-    draft: ['采购篮', '提交采购申请', 'submit-request', '提交后进入钉钉初审', '选择了 ' + selectedProducts().length + ' 个商品'],
-    initialApproval: ['当前动作', '模拟钉钉初审通过', 'approve-initial', '模拟外部审批回调，随后自动拆单', '等待审批回调'],
-    splitting: ['当前动作', '提交下发审批', 'submit-final', '确认拆单结果后进入第二次钉钉审批', '已生成 ' + Object.keys(grouped()).length + ' 张子单'],
+    draft: ['采购篮', '提交给 AI 整理', 'submit-request', 'AI 只整理当前输入，不会自动审批', '选择了 ' + selectedProducts().length + ' 个商品'],
+    aiReview: ['人工校对', '确认结构化结果', 'confirm-ai', '确认后才生成采购单并进入业务初审', '1 个字段需要关注'],
+    initialApproval: ['当前动作', '模拟钉钉初审通过', 'approve-initial', '模拟外部审批回调，随后生成 AI 拆单建议', '等待审批回调'],
+    splitting: ['人工复核', '批准建议并提交审批', 'submit-final', '可修改供应商；规则通过后进入执行审批', 'AI 建议 ' + Object.keys(grouped()).length + ' 张子单'],
     finalApproval: ['当前动作', '模拟最终审批通过', 'approve-final', '通过后才真正生成供应商订单', '等待下发审批'],
+    messageReview: ['发送前闸门', '确认并生成模拟链接', 'confirm-outbound', '不发送真实消息，仅进入供应商端演示', '2 位供应商待联系'],
     dispatched: ['当前动作', '打开供应商端', 'open-supplier', '体验供应商如何查看订单并回传物流', '2 张订单待供应商处理'],
     shipped: ['当前动作', '确认门店签收', 'receive', '签收后完成整条采购流程', '物流运输中'],
     completed: ['演示完成', '重新走一遍流程', 'reset', '所有数据均为虚构演示数据', '流程已闭环']
@@ -169,9 +189,11 @@ function render() {
   renderFlow();
   const renderers = {
     draft: renderDraft,
+    aiReview: renderAIReview,
     initialApproval: renderInitialApproval,
     splitting: renderSplitting,
     finalApproval: renderFinalApproval,
+    messageReview: renderMessageReview,
     dispatched: renderDispatched,
     shipped: renderShipped,
     completed: renderCompleted
@@ -213,7 +235,7 @@ document.addEventListener('click', function (event) {
     const nav = navButton.dataset.nav;
     if (nav === 'draft') { state = 'draft'; render(); }
     else if (nav === 'order') {
-      if (state === 'draft') showToast('先提交采购申请，系统会生成采购单');
+      if (state === 'draft' || state === 'aiReview') showToast('先完成需求整理与人工校对，系统才会生成采购单');
       else render();
     } else if (nav === 'supplier') {
       if (state === 'dispatched' || state === 'shipped') openSupplier();
@@ -230,14 +252,19 @@ document.addEventListener('click', function (event) {
       showToast('请填写用途并至少选择一个商品');
       return;
     }
+    state = 'aiReview';
+    addEvent('AI 需求整理完成', '4 个字段已提取 · 1 个需关注');
+    showToast('AI 已整理需求，请人工校对');
+    render();
+  } else if (name === 'confirm-ai') {
     state = 'initialApproval';
-    addEvent('采购申请已提交', '已推送钉钉初审');
-    showToast('采购单 BF-260816 已生成');
+    addEvent('结构化结果已确认', '采购单已推送钉钉初审');
+    showToast('人工确认完成，采购单 BF-260816 已生成');
     render();
   } else if (name === 'approve-initial') {
     state = 'splitting';
-    addEvent('钉钉初审通过', '系统自动完成供应商拆单');
-    showToast('审批回调成功，已自动拆成 2 张子单');
+    addEvent('钉钉初审通过', 'AI 已生成供应商拆单建议');
+    showToast('审批回调成功，请复核 AI 拆单建议');
     render();
   } else if (name === 'submit-final') {
     state = 'finalApproval';
@@ -245,9 +272,14 @@ document.addEventListener('click', function (event) {
     showToast('已提交最终审批');
     render();
   } else if (name === 'approve-final') {
+    state = 'messageReview';
+    addEvent('最终审批通过', 'AI 已生成供应商沟通草稿');
+    showToast('审批已通过，请确认对外沟通内容');
+    render();
+  } else if (name === 'confirm-outbound') {
     state = 'dispatched';
-    addEvent('最终审批通过', '供应商订单与安全链接已生成');
-    showToast('2 张供应商订单已下发');
+    addEvent('采购人员确认对外联系', '模拟供应商链接已生成');
+    showToast('已生成 2 张模拟供应商订单');
     render();
   } else if (name === 'open-supplier') {
     openSupplier();

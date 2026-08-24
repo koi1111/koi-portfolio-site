@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Career Agent · Interactive Workflow</title>
+  <link rel="stylesheet" href="career-agent-demo.css?v=1">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="side-nav">
+      <div class="brand"><i>CA</i><span><b>Career Agent</b><small>CONTROLLED WORKFLOW</small></span></div>
+      <nav aria-label="演示导航">
+        <button class="active" data-view="workflow"><i>⌁</i><span>岗位工作流</span></button>
+        <button data-view="profile"><i>◎</i><span>职业画像</span></button>
+        <button data-view="logs"><i>≡</i><span>执行日志</span></button>
+      </nav>
+      <div class="safety"><span>HUMAN GATE</span><p>任何对外沟通都需要人工确认。</p></div>
+      <div class="identity"><i>瑾</i><span><b>王瑾俪</b><small>求职工作流 · Demo</small></span></div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div><b>岗位发现</b><span>/ AI Workflow</span></div>
+        <div class="demo-state"><i></i><span>SIMULATED DATA</span><button data-action="reset">重置 ↻</button></div>
+      </header>
+
+      <section class="page">
+        <header class="page-head">
+          <div><span class="eyebrow">DISCOVER → ANALYZE → REVIEW → ACT</span><h1>把重复搜索交给 Agent，<br>把职业判断留给自己。</h1></div>
+          <p>这是基于真实产品逻辑制作的安全演示。岗位、公司与消息均为虚构数据，不连接招聘平台，也不会发送真实消息。</p>
+        </header>
+
+        <div class="workflow-progress" id="workflowProgress" aria-label="Agent 工作流进度"></div>
+        <div class="workspace">
+          <section class="work-panel" id="workArea" aria-live="polite"></section>
+          <aside class="decision-panel" id="decisionPanel"></aside>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="career-agent-demo.js?v=1"></script>
+</body>
+</html>
