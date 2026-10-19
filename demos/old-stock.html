@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>老货盘点 · 交互演示</title>
+  <style>
+    :root{--blue:#2f67ea;--blue-pale:#edf3ff;--ink:#1c293b;--muted:#66758a;--line:#e2e8f0;--bg:#f6f8fb;--green:#14845a;--amber:#b45b14;--red:#b84444}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.48 Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    button,input,select{font:inherit}
+    button,select{cursor:pointer}
+    button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #9bb9ff;outline-offset:2px}
+    ::selection{background:#bfd4ff;color:#172337}
+    ::-webkit-scrollbar{height:9px;width:9px}::-webkit-scrollbar-thumb{background:#c6d0dd;border:2px solid var(--bg);border-radius:9px}
+    .shell{min-height:100vh;display:grid;grid-template-columns:194px minmax(0,1fr)}
+    aside{background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;min-height:520px}
+    .brand{height:77px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:14px}
+    .mark{display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:var(--blue);color:white;font-weight:850;font-size:12px;letter-spacing:-.04em}
+    .brand strong{display:block;font-size:15px;line-height:1.1}.brand small{display:block;margin-top:5px;font-size:9px;color:#8591a4;letter-spacing:.05em}
+    aside nav{padding:15px 10px;display:grid;gap:3px}
+    aside nav a{display:flex;gap:10px;align-items:center;padding:10px 11px;border-radius:7px;text-decoration:none;color:#56657a;font-size:12px}
+    aside nav a:hover,aside nav a.active{background:var(--blue-pale);color:var(--blue);font-weight:700}
+    aside nav a span{width:18px;text-align:center;font-weight:800}
+    .side-note{margin:auto 11px 14px;padding:12px;border-radius:9px;background:#f4f7fb;color:#66758a;font-size:10px}
+    .side-note b{display:block;color:var(--ink);margin-bottom:4px;font-size:11px}
+    main{min-width:0}
+    .topbar{height:53px;padding:0 24px;display:flex;justify-content:space-between;align-items:center;background:#fff;border-bottom:1px solid var(--line);color:#76849a;font-size:11px}
+    .topbar strong{color:#4c5c72;font-weight:650}
+    .content{max-width:1500px;margin:auto;padding:22px 24px 38px}
+    .page-title{display:flex;align-items:start;justify-content:space-between;gap:16px;margin-bottom:16px}
+    h1{margin:0;font-size:24px;letter-spacing:-.025em;line-height:1.2}
+    .page-title p{margin:5px 0 0;color:var(--muted);font-size:12px}
+    .demo-tag{display:inline-flex;align-items:center;white-space:nowrap;border:1px solid #d8e4ff;color:var(--blue);border-radius:999px;padding:5px 9px;background:#f0f5ff;font-size:10px;font-weight:700}
+    .toolbar,.filterbar,.rules,.table-panel,.audit{background:#fff;border:1px solid var(--line);border-radius:10px}
+    .toolbar{padding:13px;display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin-bottom:13px}
+    label.field{display:flex;flex-direction:column;gap:5px;min-width:138px;font-size:10px;color:var(--muted);font-weight:650}
+    label.field select,label.field input,.search{height:36px;width:100%;border:1px solid #d5deea;border-radius:7px;background:#fff;color:var(--ink);padding:0 10px;min-width:0}
+    .toolbar .grow{flex:1;min-width:190px}
+    .primary,.quiet{height:36px;border-radius:7px;padding:0 12px;font-size:11px;font-weight:700}
+    .primary{background:var(--blue);color:#fff;border:1px solid var(--blue)}.primary:hover{background:#2458d2}
+    .quiet{background:#fff;color:#4f617a;border:1px solid #d5deea}.quiet:hover{background:#f3f7ff}
+    .summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:13px;overflow:hidden}
+    .summary>div{padding:12px 14px;min-width:0}.summary>div+div{border-left:1px solid var(--line)}
+    .summary span{display:block;color:var(--muted);font-size:10px}.summary b{display:block;font-size:21px;line-height:1.2;margin:5px 0 2px;font-variant-numeric:tabular-nums}.summary small{color:#8a97a8;font-size:9px}
+    .summary .usable b{color:var(--blue)}.summary .discount b{color:var(--amber)}.summary .clear b{color:var(--red)}
+    .section-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:16px 0 8px}
+    .section-row h2{font-size:15px;margin:0}.section-row span{color:var(--muted);font-size:10px}
+    .filterbar{display:flex;align-items:center;gap:8px;padding:9px 11px;flex-wrap:wrap;border-radius:10px 10px 0 0;border-bottom:0}
+    .filters{display:flex;gap:5px;flex-wrap:wrap}.filters button{border:1px solid #dce3ec;border-radius:999px;background:#fff;color:#5c6a7e;font-size:10px;padding:5px 9px}
+    .filters button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+    .filterbar select,.filterbar input{height:32px;padding:0 9px;border:1px solid #dce3ec;border-radius:6px;background:#fff;color:var(--ink);font-size:10px}
+    .filterbar input{min-width:150px;flex:1;max-width:230px}
+    .filterbar .count{margin-left:auto;color:#718097;font-size:10px;font-variant-numeric:tabular-nums}
+    .table-panel{border-radius:0 0 10px 10px;overflow:hidden}
+    .table-scroll{overflow:auto;max-height:390px;scrollbar-color:#c6d0dd transparent}
+    table{width:100%;min-width:920px;border-collapse:collapse;text-align:left;font-size:10px}
+    th{position:sticky;top:0;z-index:1;background:#f8fafc;color:#708096;font-size:9px;font-weight:700;white-space:nowrap}
+    th,td{padding:10px 9px;border-bottom:1px solid #edf1f6;vertical-align:middle}
+    th button{border:0;background:transparent;color:inherit;padding:0;font-size:inherit;font-weight:inherit;text-align:left}
+    th button:hover{color:var(--blue)}
+    tbody tr:hover{background:#f9fbff}
+    td.numeric{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:650}
+    .item{display:flex;align-items:center;gap:9px;min-width:176px}.swatch{width:28px;height:31px;flex:0 0 auto;border-radius:5px;background:var(--swatch);border:1px solid rgba(0,0,0,.07)}
+    .item strong{display:block;font-size:10px}.item small{display:block;font-size:9px;color:#8c99a9}
+    .pill{display:inline-flex;align-items:center;padding:3px 6px;border-radius:5px;font-size:9px;white-space:nowrap;font-weight:700}
+    .normal{color:#147451;background:#e9f8f0}.discounted{color:#a45613;background:#fff2e4}.clearance{color:#aa3e43;background:#fff0f0}.excluded{color:#69778c;background:#edf1f6}
+    td.system small{display:block;margin-top:4px;max-width:170px;color:#8290a2;line-height:1.25}
+    .override{width:105px;max-width:105px;border:1px solid #d8e1ec;border-radius:6px;background:#fff;padding:5px 4px;font-size:10px}
+    .changed{display:block;margin-top:3px;color:var(--blue);font-size:9px}
+    .row-more{border:1px solid #d8e1ec;border-radius:6px;background:#fff;color:var(--blue);padding:5px 7px;font-size:10px;white-space:nowrap}
+    .detail-row td{background:#f5f8fd;padding:12px 14px}.detail-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.detail-grid b{display:block;margin-bottom:4px;color:#41536d;font-size:10px}.detail-grid span{color:#68788f;font-size:10px}.detail-grid .reason{grid-column:span 2}
+    .empty{padding:26px;text-align:center;color:var(--muted)}
+    .below{display:grid;grid-template-columns:.9fr 1.1fr;gap:13px;margin-top:13px;align-items:start}
+    .rules,.audit{overflow:hidden}.panel-head{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-bottom:1px solid var(--line)}.panel-head h2{margin:0;font-size:12px}.panel-head span{color:#8a97a8;font-size:9px}
+    .rule-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;padding:13px}
+    .rule-fields label{display:block;color:var(--muted);font-size:9px}.rule-fields input{display:block;width:100%;height:35px;margin-top:5px;border:1px solid #d8e1eb;border-radius:6px;padding:0 8px;color:var(--ink);font-variant-numeric:tabular-nums}
+    .rules p{padding:0 13px 13px;margin:0;color:#77869b;font-size:10px;line-height:1.55}
+    pre{margin:0;padding:13px;min-height:157px;max-height:225px;overflow:auto;white-space:pre-wrap;word-break:break-word;background:#fbfcfe;color:#50617a;font:10px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+    .footer-note{margin:12px 0 0;color:#8290a2;font-size:10px}
+    @media(max-width:1100px){.shell{grid-template-columns:70px minmax(0,1fr)}.brand{justify-content:center;padding:12px}.brand>div:last-child,.side-note,aside nav a{font-size:0}.side-note{display:none}aside nav a{justify-content:center}aside nav a span{font-size:15px}.summary{grid-template-columns:repeat(3,1fr)}.summary>div:nth-child(4){border-left:0;border-top:1px solid var(--line)}.summary>div:nth-child(5){border-top:1px solid var(--line)}}
+    @media(max-width:700px){.shell{grid-template-columns:1fr}aside{display:none}.topbar{padding:0 13px}.content{padding:14px 11px 28px}.page-title{align-items:start}.page-title h1{font-size:20px}.page-title p{font-size:10px}.toolbar{display:grid;grid-template-columns:1fr 1fr}.toolbar label.field{min-width:0}.toolbar .grow{grid-column:1/-1;min-width:0}.toolbar button{width:100%}.summary{grid-template-columns:repeat(2,1fr)}.summary>div:nth-child(odd){border-left:0}.summary>div:nth-child(n+3){border-top:1px solid var(--line)}.summary>div:last-child{grid-column:1/-1}.filterbar .count{margin-left:0}.below{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr 1fr}.detail-grid .reason{grid-column:span 2}}
+    @media(max-width:420px){.rule-fields{grid-template-columns:1fr 1fr}.rule-fields label:last-child{grid-column:1/-1}.topbar .clock{display:none}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="brand"><div class="mark">OS</div><div><strong>老货盘点</strong><small>STOCK REVIEW CONSOLE</small></div></div>
+      <nav aria-label="演示导航">
+        <a href="#overview" class="active"><span>▦</span>盘点总览</a>
+        <a href="#stock-list"><span>≡</span>商品明细</a>
+        <a href="#rules"><span>⚙</span>规则阈值</a>
+        <a href="#run-log"><span>◇</span>运行记录</a>
+      </nav>
+      <div class="side-note"><b>演示工作台</b>所有商品与数值均为虚构。档位修改只影响当前页面。</div>
+    </aside>
+    <main id="overview">
+      <div class="topbar"><strong>商品运营 / 老货盘点</strong><span class="clock">SIMULATION · <time id="clock"></time></span></div>
+      <div class="content">
+        <div class="page-title"><div><h1>秋冬老货盘点</h1><p>从款级建议到买手复核，汇总本季可用老货数量。</p></div><span class="demo-tag">虚构数据 · 可直接操作</span></div>
+        <section class="toolbar" aria-label="盘点范围">
+          <label class="field">品牌<select id="brand"><option value="北岸运动">北岸运动</option><option value="云川生活">云川生活</option></select></label>
+          <label class="field">盘点季节<select id="season"><option value="秋冬">秋冬</option><option value="夏季">夏季</option></select></label>
+          <label class="field grow">货号或品名<input id="search" type="search" placeholder="搜索当前品牌商品"></label>
+          <button type="button" class="quiet" id="reset">重置演示</button>
+          <button type="button" class="primary" id="export">导出当前品牌 CSV</button>
+        </section>
+        <div class="summary" aria-live="polite">
+          <div><span>在盘商品</span><b id="sum-spu">—</b><small>SPU / 当前品牌</small></div>
+          <div class="usable"><span>可用合计</span><b id="sum-usable">—</b><small>正常 + 打折 / 件</small></div>
+          <div><span>正常可用</span><b id="sum-normal">—</b><small>件</small></div>
+          <div class="discount"><span>打折可用</span><b id="sum-discount">—</b><small>件</small></div>
+          <div class="clear"><span>清理 / 剔除</span><b id="sum-other">—</b><small>件</small></div>
+        </div>
+        <div class="section-row" id="stock-list"><h2>款级盘点明细</h2><span>点击列头排序；买手改档后实时更新汇总</span></div>
+        <div class="filterbar">
+          <div class="filters" role="group" aria-label="处置档位筛选">
+            <button type="button" data-filter="全部" class="active" aria-pressed="true">全部</button>
+            <button type="button" data-filter="正常可用" aria-pressed="false">正常可用</button>
+            <button type="button" data-filter="打折可用" aria-pressed="false">打折可用</button>
+            <button type="button" data-filter="清理" aria-pressed="false">清理</button>
+            <button type="button" data-filter="剔除" aria-pressed="false">剔除</button>
+          </div>
+          <select id="category" aria-label="按品类筛选"><option value="全部">全部品类</option></select>
+          <select id="warehouse" aria-label="按仓库筛选"><option value="全部">全部仓库</option></select>
+          <span class="count" id="visible-count"></span>
+        </div>
+        <section class="table-panel" aria-label="老货商品明细">
+          <div class="table-scroll"><table>
+            <thead><tr><th>商品 / 货号</th><th>季节 / 品类</th><th><button type="button" data-sort="stock">在库件数 ↕</button></th><th><button type="button" data-sort="age">平均库龄 ↕</button></th><th><button type="button" data-sort="sell">售罄率 ↕</button></th><th>系统建议与依据</th><th>买手最终档</th><th>建议售价</th><th>查看</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table></div>
+        </section>
+        <div class="below">
+          <section class="rules" id="rules">
+            <div class="panel-head"><h2>规则阈值</h2><span>修改后立即重算 · 人工改档保留</span></div>
+            <div class="rule-fields">
+              <label>清理库龄 ≥ 天<input id="clear-age" type="number" min="180" max="900" value="450"></label>
+              <label>碎尾库存 ≤ 件<input id="thin-stock" type="number" min="0" max="30" value="5"></label>
+              <label>打折售罄率 ≤ %<input id="normal-line" type="number" min="0" max="100" value="50"></label>
+            </div>
+            <p>判档顺序：反季剔除 → 超库龄清理 → 碎尾清理 → 低售罄打折 → 正常可用。库龄来自原始入库；折扣先按店龄取档，必要时回退库龄。</p>
+          </section>
+          <section class="audit" id="run-log">
+            <div class="panel-head"><h2>盘点运行记录</h2><span id="run-id">等待计算</span></div>
+            <pre id="log" aria-live="polite"></pre>
+          </section>
+        </div>
+        <p class="footer-note">演示仅呈现老货盘点与人工复核流程，不连接业务数据库，也不生成真实采购或调拨指令。</p>
+      </div>
+    </main>
+  </div>
+  <script>
+  (()=>{
+    'use strict';
+    const items=[
+      {brand:'北岸运动',sku:'NA-2601',name:'保暖短款羽绒服',category:'外套',season:'秋冬',warehouse:'北方仓',stock:126,age:392,minAge:325,maxAge:439,shopAge:121,sell:68,salePrice:799,purModel:1,color:'#c8beb0'},
+      {brand:'北岸运动',sku:'NA-2602',name:'轻量针织开衫',category:'针织',season:'四季',warehouse:'华东仓',stock:84,age:278,minAge:220,maxAge:338,shopAge:82,sell:32,salePrice:329,purModel:1,color:'#b8b3a8'},
+      {brand:'北岸运动',sku:'NA-2603',name:'城市慢跑鞋',category:'鞋履',season:'四季',warehouse:'华东仓',stock:43,age:482,minAge:451,maxAge:519,shopAge:102,sell:57,salePrice:459,purModel:2,color:'#aeb8bd'},
+      {brand:'北岸运动',sku:'NA-2604',name:'基础棉质长裤',category:'裤装',season:'四季',warehouse:'北方仓',stock:5,age:312,minAge:281,maxAge:367,shopAge:18,sell:72,salePrice:239,purModel:1,color:'#aab3ad'},
+      {brand:'北岸运动',sku:'NA-2605',name:'夏季透气短袖',category:'上装',season:'夏季',warehouse:'华东仓',stock:97,age:241,minAge:185,maxAge:294,shopAge:67,sell:41,salePrice:159,purModel:1,color:'#cdd8cf'},
+      {brand:'北岸运动',sku:'NA-2606',name:'户外防风夹克',category:'外套',season:'秋冬',warehouse:'北方仓',stock:76,age:335,minAge:289,maxAge:378,shopAge:22,sell:18,salePrice:599,purModel:1,color:'#8d9c91'},
+      {brand:'北岸运动',sku:'NA-2607',name:'轻量训练运动裤',category:'裤装',season:'四季',warehouse:'华南仓',stock:54,age:211,minAge:182,maxAge:249,shopAge:47,sell:53,salePrice:289,purModel:2,color:'#adb3bb'},
+      {brand:'北岸运动',sku:'NA-2608',name:'秋冬加绒卫衣',category:'上装',season:'秋冬',warehouse:'北方仓',stock:31,age:261,minAge:204,maxAge:314,shopAge:94,sell:9,salePrice:369,purModel:1,color:'#b4aaa2'},
+      {brand:'云川生活',sku:'YC-3101',name:'羊毛混纺大衣',category:'外套',season:'秋冬',warehouse:'华东仓',stock:88,age:364,minAge:288,maxAge:401,shopAge:110,sell:62,salePrice:1099,purModel:1,color:'#c0b5ab'},
+      {brand:'云川生活',sku:'YC-3102',name:'宽松版型牛仔裤',category:'裤装',season:'四季',warehouse:'华南仓',stock:64,age:301,minAge:255,maxAge:346,shopAge:16,sell:26,salePrice:399,purModel:1,color:'#8ca1b3'},
+      {brand:'云川生活',sku:'YC-3103',name:'轻薄夏季连衣裙',category:'裙装',season:'夏季',warehouse:'华东仓',stock:52,age:275,minAge:204,maxAge:339,shopAge:74,sell:19,salePrice:429,purModel:1,color:'#dbc3c1'},
+      {brand:'云川生活',sku:'YC-3104',name:'经典白色衬衫',category:'上装',season:'四季',warehouse:'华南仓',stock:4,age:267,minAge:229,maxAge:316,shopAge:43,sell:78,salePrice:259,purModel:2,color:'#e2e3dd'},
+      {brand:'云川生活',sku:'YC-3105',name:'灯芯绒半裙',category:'裙装',season:'秋冬',warehouse:'华东仓',stock:38,age:469,minAge:421,maxAge:512,shopAge:96,sell:44,salePrice:349,purModel:1,color:'#baaba0'},
+      {brand:'云川生活',sku:'YC-3106',name:'四季基础针织衫',category:'针织',season:'四季',warehouse:'北方仓',stock:72,age:233,minAge:188,maxAge:292,shopAge:78,sell:37,salePrice:299,purModel:1,color:'#c5c9be'}
+    ];
+    const defaults={clearAge:450,thinStock:5,normalLine:50};
+    const statuses=['正常可用','打折可用','清理','剔除'];
+    const $=selector=>document.querySelector(selector);
+    const $$=selector=>[...document.querySelectorAll(selector)];
+    const escapeHtml=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const state={brand:'北岸运动',season:'秋冬',filter:'全部',category:'全部',warehouse:'全部',search:'',sort:'age',descending:true,expanded:null,overrides:new Map(),run:0,lastEvent:'初次载入'};
+    let rows=[];
+
+    // 与业务规则同序：反季、库龄、碎尾、售罄。每个结果保留可读依据。
+    function discountCoefficient(age,sell){
+      if(!Number.isFinite(age))return null;
+      if(age>30&&age<=60)return sell<=10?0.65:sell<=20?0.75:sell<=30?0.85:null;
+      if(age>60)return sell<=10?0.5:sell<=20?0.55:sell<=30?0.6:sell<=40?0.65:sell<=50?0.7:null;
+      return null;
+    }
+    function roundPrice(value,purModel){
+      let price;
+      if(value<1)price=0;else if(value<4.5)price=1;else if(value<9)price=5;
+      else if(value<17)price=purModel===2?9:9.9;
+      else if(value<25)price=purModel===2?19:19.9;
+      else price=Math.floor((value-25)/10)*10+(purModel===2?29:29.9);
+      const tens=Math.floor(price/10)%10;
+      if(price>79&&(tens===6||tens===8))price-=10;
+      if(price>200&&tens===1)price-=20;
+      return Math.round(price*100)/100;
+    }
+    function decide(item,rule){
+      const off=state.season==='秋冬'?'夏季':'秋冬';
+      if(item.season===off)return {grade:'剔除',reason:`${item.season}款，本次盘${state.season}用不上`,coefficient:null,price:null,basis:'季节'};
+      if(item.age>=rule.clearAge)return {grade:'清理',reason:`平均库龄 ${item.age} 天 ≥ ${rule.clearAge} 天`,coefficient:null,price:null,basis:'库龄'};
+      if(item.stock<=rule.thinStock)return {grade:'清理',reason:`在库 ${item.stock} 件 ≤ 碎尾线 ${rule.thinStock} 件`,coefficient:null,price:null,basis:'碎尾'};
+      if(item.sell<=rule.normalLine){
+        let coefficient=discountCoefficient(item.shopAge,item.sell);
+        let basis=`店龄 ${item.shopAge} 天`;
+        if(coefficient===null){coefficient=discountCoefficient(item.age,item.sell);basis=`店龄不适用 → 库龄 ${item.age} 天`;}
+        const price=coefficient===null?null:roundPrice(item.salePrice*coefficient,item.purModel);
+        return {grade:'打折可用',reason:`售罄 ${item.sell}% ≤ ${rule.normalLine}%；${basis}`,coefficient,price,basis};
+      }
+      return {grade:'正常可用',reason:`售罄 ${item.sell}% > ${rule.normalLine}%，动销尚可`,coefficient:null,price:null,basis:'售罄'};
+    }
+    function rules(){return {
+      clearAge:Number($('#clear-age').value),thinStock:Number($('#thin-stock').value),normalLine:Number($('#normal-line').value)
+    };}
+    function clampRules(){
+      [['#clear-age',180,900,defaults.clearAge],['#thin-stock',0,30,defaults.thinStock],['#normal-line',0,100,defaults.normalLine]].forEach(([selector,min,max,fallback])=>{
+        const input=$(selector);const value=input.value.trim()===''?NaN:Number(input.value);input.value=Number.isFinite(value)?Math.min(max,Math.max(min,Math.round(value))):fallback;
+      });
+    }
+    function classFor(grade){return {'正常可用':'normal','打折可用':'discounted','清理':'clearance','剔除':'excluded'}[grade];}
+    function recalculate(event){
+      clampRules();state.run+=1;state.lastEvent=event;
+      $('.page-title h1').textContent=`${state.season}老货盘点`;
+      const rule=rules();
+      rows=items.filter(item=>item.brand===state.brand).map(item=>{
+        const system=decide(item,rule);
+        const override=state.overrides.get(item.sku)||null;
+        return {...item,system,override,final:override||system.grade};
+      });
+      renderSummary();renderFilters();renderTable();renderLog(rule);
+    }
+    function renderSummary(){
+      const qty=grade=>rows.filter(row=>row.final===grade).reduce((sum,row)=>sum+row.stock,0);
+      const normal=qty('正常可用'),discount=qty('打折可用'),clear=qty('清理'),excluded=qty('剔除');
+      $('#sum-spu').textContent=rows.length;$('#sum-usable').textContent=normal+discount;
+      $('#sum-normal').textContent=normal;$('#sum-discount').textContent=discount;$('#sum-other').textContent=clear+excluded;
+    }
+    function renderFilters(){
+      const categories=[...new Set(rows.map(row=>row.category))].sort();
+      const warehouses=[...new Set(rows.map(row=>row.warehouse))].sort();
+      if(state.category!=='全部'&&!categories.includes(state.category))state.category='全部';
+      if(state.warehouse!=='全部'&&!warehouses.includes(state.warehouse))state.warehouse='全部';
+      $('#category').innerHTML='<option value="全部">全部品类</option>'+categories.map(value=>`<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');
+      $('#warehouse').innerHTML='<option value="全部">全部仓库</option>'+warehouses.map(value=>`<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');
+      $('#category').value=state.category;$('#warehouse').value=state.warehouse;
+      $$('.filters button').forEach(button=>{const active=button.dataset.filter===state.filter;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
+    }
+    function visibleRows(){
+      const term=state.search.trim().toLocaleLowerCase('zh-CN');
+      return rows.filter(row=>(state.filter==='全部'||row.final===state.filter)
+        &&(state.category==='全部'||row.category===state.category)
+        &&(state.warehouse==='全部'||row.warehouse===state.warehouse)
+        &&(!term||`${row.sku} ${row.name}`.toLocaleLowerCase('zh-CN').includes(term)))
+        .sort((a,b)=>{const difference=a[state.sort]-b[state.sort];return state.descending?-difference:difference;});
+    }
+    function renderTable(){
+      const visible=visibleRows();$('#visible-count').textContent=`显示 ${visible.length} / ${rows.length} 款`;
+      $('#rows').innerHTML=visible.length?visible.map(row=>{
+        const id=escapeHtml(row.sku),open=state.expanded===row.sku;
+        const price=row.final==='打折可用'?(row.system.price===null?'需人工定价':`¥${row.system.price}`):'—';
+        const options=['自动判定',...statuses].map(value=>`<option value="${escapeHtml(value)}" ${row.override===value||(!row.override&&value==='自动判定')?'selected':''}>${escapeHtml(value)}</option>`).join('');
+        return `<tr>
+          <td><div class="item"><span class="swatch" style="--swatch:${row.color}"></span><span><strong>${escapeHtml(row.name)}</strong><small>${id}</small></span></div></td>
+          <td>${escapeHtml(row.season)}<br><small>${escapeHtml(row.category)}</small></td>
+          <td class="numeric">${row.stock} 件</td><td class="numeric">${row.age} 天</td><td class="numeric">${row.sell}%</td>
+          <td class="system"><span class="pill ${classFor(row.system.grade)}">${row.system.grade}</span><small>${escapeHtml(row.system.reason)}</small></td>
+          <td><select class="override" data-override="${id}" aria-label="${id} 的买手最终档">${options}</select>${row.override?'<span class="changed">人工调整</span>':''}</td>
+          <td class="numeric">${price}</td>
+          <td><button type="button" class="row-more" data-expand="${id}" aria-expanded="${open}" aria-controls="detail-${id}">${open?'收起':'明细'}</button></td>
+        </tr><tr class="detail-row" id="detail-${id}" ${open?'':'hidden'}><td colspan="9"><div class="detail-grid">
+          <div><b>库龄分布</b><span>${row.minAge}–${row.maxAge} 天 · 平均 ${row.age} 天</span></div>
+          <div><b>店龄与仓库</b><span>${row.shopAge} 天 · ${escapeHtml(row.warehouse)}</span></div>
+          <div><b>当前售价</b><span>¥${row.salePrice} · ${row.purModel===2?'代销':'自营'}</span></div>
+          <div><b>折扣建议</b><span>${row.system.coefficient===null?'当前系统档无需定价':`${Math.round(row.system.coefficient*100)}% × ¥${row.salePrice} → ¥${row.system.price}`}</span></div>
+          <div class="reason"><b>系统判断</b><span>${escapeHtml(row.system.reason)}；规则命中：${row.system.basis}</span></div>
+          <div class="reason"><b>最终处理</b><span>${row.override?`买手调整为 ${escapeHtml(row.final)}，系统原建议 ${row.system.grade}`:`保留系统建议 ${row.final}`}</span></div>
+        </div></td></tr>`;
+      }).join(''):'<tr><td colspan="9" class="empty">当前筛选下没有商品，请更换档位或清空搜索。</td></tr>';
+    }
+    function renderLog(rule){
+      const totalStock=rows.reduce((sum,row)=>sum+row.stock,0);
+      const byGrade=grade=>rows.filter(row=>row.final===grade).reduce((sum,row)=>sum+row.stock,0);
+      const used=byGrade('正常可用')+byGrade('打折可用'),other=byGrade('清理')+byGrade('剔除');
+      const empty=rows.filter(row=>[row.stock,row.age,row.sell,row.salePrice].some(value=>value===null||value===undefined)).length;
+      const negative=rows.filter(row=>[row.stock,row.age,row.sell,row.salePrice].some(value=>value<0)).length;
+      const zero=rows.filter(row=>row.stock===0).length;
+      const sample=rows.slice(0,4).map((row,index)=>`${index+1}. ${row.sku}：库龄${row.age}天 / 库存${row.stock}件 / 售罄${row.sell}% → ${row.system.grade}${row.override?` → 人工改为${row.final}`:''}`).join('\n');
+      const id=`RUN-OS-${String(state.run).padStart(3,'0')}`;$('#run-id').textContent=id;
+      $('#log').textContent=`【运行】${id} / 老货盘点规则 v2\n【触发】${state.lastEvent}\n【输入】${state.brand} ${rows.length} 款 / ${totalStock} 件 / 本次盘 ${state.season}\n【阈值】清理库龄 ≥${rule.clearAge} 天；碎尾 ≤${rule.thinStock} 件；打折售罄 ≤${rule.normalLine}%\n【示例】\n${sample}\n【输出】可用 ${used} 件（正常 ${byGrade('正常可用')} / 打折 ${byGrade('打折可用')}）；清理 ${byGrade('清理')}；剔除 ${byGrade('剔除')}\n【人工调整】${rows.filter(row=>row.override).length} 款\n【自动校验】总库存 ${totalStock} = 可用 ${used} + 清理/剔除 ${other}：${totalStock===used+other?'通过':'异常'}；空值 ${empty}；负数 ${negative}；库存为 0 的款 ${zero}`;
+    }
+    function updateFilter(){renderTable();}
+    function exportCsv(){
+      const header=['品牌','货号','品名','品类','季节','仓库','平均库龄天','库存件数','售罄率','系统建议','最终档位','建议售价','判断依据'];
+      const values=rows.map(row=>[row.brand,row.sku,row.name,row.category,row.season,row.warehouse,row.age,row.stock,row.sell,row.system.grade,row.final,row.final==='打折可用'?(row.system.price??'需人工定价'):'',row.system.reason]);
+      const csv='\ufeff'+[header,...values].map(line=>line.map(value=>`"${String(value).replaceAll('"','""')}"`).join(',')).join('\r\n');
+      const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+      const link=document.createElement('a');link.href=url;link.download=`模拟老货盘点_${state.brand}_${state.season}.csv`;link.click();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }
+    $('#brand').addEventListener('change',event=>{state.brand=event.target.value;state.filter='全部';state.expanded=null;recalculate('切换品牌');});
+    $('#season').addEventListener('change',event=>{state.season=event.target.value;state.expanded=null;recalculate('切换盘点季节');});
+    $('#search').addEventListener('input',event=>{state.search=event.target.value;updateFilter();});
+    $('#category').addEventListener('change',event=>{state.category=event.target.value;updateFilter();});
+    $('#warehouse').addEventListener('change',event=>{state.warehouse=event.target.value;updateFilter();});
+    $$('.filters button').forEach(button=>button.addEventListener('click',()=>{state.filter=button.dataset.filter;renderFilters();updateFilter();}));
+    const ruleBounds={'#clear-age':[180,900],'#thin-stock':[0,30],'#normal-line':[0,100]};
+    Object.entries(ruleBounds).forEach(([selector,[min,max]])=>{
+      const input=$(selector);
+      input.addEventListener('input',()=>{
+        const value=Number(input.value);
+        if(input.value.trim()!==''&&Number.isFinite(value)&&value>=min&&value<=max)recalculate('调整规则阈值');
+      });
+      input.addEventListener('change',()=>recalculate('确认规则阈值'));
+    });
+    $$('th button[data-sort]').forEach(button=>button.addEventListener('click',()=>{
+      const key=button.dataset.sort;state.descending=state.sort===key?!state.descending:true;state.sort=key;renderTable();
+    }));
+    $('#rows').addEventListener('change',event=>{
+      const select=event.target.closest('[data-override]');if(!select)return;
+      const sku=select.dataset.override;if(select.value==='自动判定')state.overrides.delete(sku);else state.overrides.set(sku,select.value);
+      recalculate(`买手改档 ${sku}`);
+    });
+    $('#rows').addEventListener('click',event=>{
+      const button=event.target.closest('[data-expand]');if(!button)return;
+      state.expanded=state.expanded===button.dataset.expand?null:button.dataset.expand;renderTable();
+    });
+    $('#reset').addEventListener('click',()=>{
+      state.brand='北岸运动';state.season='秋冬';state.filter='全部';state.category='全部';state.warehouse='全部';state.search='';state.sort='age';state.descending=true;state.expanded=null;state.overrides.clear();
+      $('#brand').value=state.brand;$('#season').value=state.season;$('#search').value='';
+      $('#clear-age').value=defaults.clearAge;$('#thin-stock').value=defaults.thinStock;$('#normal-line').value=defaults.normalLine;
+      recalculate('重置演示');
+    });
+    $('#export').addEventListener('click',exportCsv);
+    setInterval(()=>$('#clock').textContent=new Date().toLocaleTimeString('zh-CN',{hour12:false}),1000);
+    $('#clock').textContent=new Date().toLocaleTimeString('zh-CN',{hour12:false});
+    recalculate('初次载入');
+  })();
+  </script>
+</body>
+</html>
